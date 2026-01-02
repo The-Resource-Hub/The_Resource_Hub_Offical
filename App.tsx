@@ -11,15 +11,15 @@ import { Product } from './types/index.ts';
 const ProductDetailsPage = lazy(() => import('./features/store/ProductDetailsPage.tsx'));
 const WalletPage = lazy(() => import('./features/wallet/WalletPage.tsx'));       
 const OrdersPage = lazy(() => import('./features/orders/OrdersPage.tsx'));       
-const ReferralPage = lazy(() => import('./features/referral/ReferralPage.tsx')); 
+const ReferralPage = lazy(() => import('./features/refferal/ReferralPage.tsx')); 
 const ShortlinkPage = lazy(() => import('./features/shortlink/ShortlinkPage.tsx'));
 const ShortlinkStorePage = lazy(() => import('./features/shortlink/ShortlinkStorePage.tsx'));
 const ShreeGenPage = lazy(() => import('./features/ai/ShreeGenPage.tsx'));
 const AdminLoginPage = lazy(() => import('./features/admin/AdminLoginPage.tsx'));
 const AdminDashboardPage = lazy(() => import('./features/admin/AdminDashboardPage.tsx'));
-const PremiumPage = lazy(() => import('./features/premium/PremiumPage.tsx'));
+const PremiumPage = lazy(() => import('./features/primium/PremiumPage.tsx'));
 const GamingPage = lazy(() => import('./features/gaming/GamingPage.tsx'));
-const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenApiPage.tsx'));
+const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 

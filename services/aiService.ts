@@ -1,5 +1,4 @@
-
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const SHREE_GEN_INSTRUCTIONS = `
 You are "Shree Gen", an elite Academic Assistant AI developed by Preet Bopche.
@@ -15,37 +14,39 @@ PEDAGOGICAL RULES:
 `;
 
 export async function runShreeGen(prompt: string, modelType: string = 'fast') {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
-  let modelName = 'gemini-3-flash-preview';
-  let config: any = {
-    systemInstruction: SHREE_GEN_INSTRUCTIONS,
-    temperature: 0.7,
-  };
+  if (!apiKey) {
+    return { 
+      text: "API key not configured. Please add VITE_GEMINI_API_KEY to your environment variables.", 
+      sources: [] 
+    };
+  }
 
-  if (modelType === 'thinking') {
-    modelName = 'gemini-3-pro-preview';
-  } else if (modelType === 'reasoning') {
-    modelName = 'gemini-3-pro-preview';
-    config.thinkingConfig = { thinkingBudget: 24000 };
-  } else if (modelType === 'research') {
-    modelName = 'gemini-3-flash-preview';
-    config.tools = [{ googleSearch: {} }];
+  const genAI = new GoogleGenerativeAI(apiKey);
+  
+  let modelName = 'gemini-1.5-flash';
+  
+  if (modelType === 'thinking' || modelType === 'reasoning') {
+    modelName = 'gemini-1.5-pro';
   }
 
   try {
-    const response = await ai.models.generateContent({
+    const model = genAI.getGenerativeModel({ 
       model: modelName,
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      config: config
+      systemInstruction: SHREE_GEN_INSTRUCTIONS,
     });
 
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
     return {
-      text: response.text || "Connection lost to Shree Gen node. Retrying...",
-      sources: response.candidates?.[0]?.groundingMetadata?.groundingChunks || []
+      text: text || "Connection lost to Shree Gen node. Retrying...",
+      sources: []
     };
   } catch (error) {
     console.error("Shree Gen Error:", error);
-    return { text: "Error: Neural connection failed. Please check Nexus API settings.", sources: [] };
+    return { text: "Error: Neural connection failed. Please check API settings.", sources: [] };
   }
 }
