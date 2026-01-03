@@ -125,6 +125,7 @@ const AGGREGATOR_MODELS = [
 
   // --- DEEPSEEK / QWEN / MISTRAL ---
   'deepseek/deepseek-chat-v3',
+  'deepseek/deepseek-v3.1-nex-n1',
   'deepseek/deepseek-r1 (Reasoning)',
   'qwen/qwen-2.5-72b-instruct',
   'qwen/qwen-2.5-coder-32b-instruct',
@@ -412,25 +413,27 @@ export const SettingsView: React.FC = () => {
   const totalTokenUsage = calculateTotalUsage();
 
   // --- Model Render Functions ---
-  const renderDirectModelCard = useCallback((model: AIModel) => {
-    const hasChanged = modelKeys[model.id] !== model.apiKey;
+  const renderDirectModelCard = useCallback((model: AIModel | AggregatorModel) => {
+    // Cast to AIModel to access apiKey property safely if needed for this UI
+    const m = model as AIModel;
+    const hasChanged = modelKeys[m.id] !== m.apiKey;
     return (
       <div 
-        key={model.id}
-        onClick={() => setSelectedDetailModel(model)}
-        className={`group relative bg-[#080808] border rounded-[2rem] p-8 hover:border-white/20 transition-all cursor-pointer overflow-hidden shadow-xl ${model.enabled ? 'border-white/5' : 'border-white/5 opacity-40'}`}
+        key={m.id}
+        onClick={() => setSelectedDetailModel(m)}
+        className={`group relative bg-[#080808] border rounded-[2rem] p-8 hover:border-white/20 transition-all cursor-pointer overflow-hidden shadow-xl ${m.enabled ? 'border-white/5' : 'border-white/5 opacity-40'}`}
       >
         <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-5">
                 <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-3 shadow-inner group-hover:scale-110 transition-transform">
-                    <img src={model.icon} alt={model.name} className="w-full h-full object-contain" />
+                    <img src={m.icon} alt={m.name} className="w-full h-full object-contain" />
                 </div>
                 <div>
-                    <h4 className="font-black text-white text-lg tracking-tight uppercase leading-none mb-1">{model.name}</h4>
-                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{model.provider}</p>
+                    <h4 className="font-black text-white text-lg tracking-tight uppercase leading-none mb-1">{m.name}</h4>
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{m.provider}</p>
                 </div>
             </div>
-            <ToggleSwitch enabled={model.enabled} onToggle={() => toggleModelStatus(model.id)} />
+            <ToggleSwitch enabled={m.enabled} onToggle={() => toggleModelStatus(m.id)} />
         </div>
         
         <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
@@ -439,8 +442,8 @@ export const SettingsView: React.FC = () => {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><Key size={14} /></div>
                 <input 
                     type="password"
-                    value={modelKeys[model.id] || ''}
-                    onChange={(e) => handleKeyChange(model.id, e.target.value)}
+                    value={modelKeys[m.id] || ''}
+                    onChange={(e) => handleKeyChange(m.id, e.target.value)}
                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-xs font-mono text-white outline-none focus:border-cyan-500/50 transition-all placeholder:text-white/10"
                     placeholder="••••••••••••••••"
                 />
@@ -452,7 +455,7 @@ export const SettingsView: React.FC = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        onClick={() => initializeKey(model.id)}
+                        onClick={() => initializeKey(m.id)}
                         className="w-full py-3 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2 mt-2"
                     >
                         <Zap size={14} fill="currentColor" /> Initialize Neural Link
@@ -463,8 +466,8 @@ export const SettingsView: React.FC = () => {
 
         <div className="mt-8 flex items-center justify-between">
             <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full animate-pulse ${model.status === 'online' && model.enabled ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
-                <span className="text-[9px] font-black uppercase tracking-widest text-white/20">{model.enabled ? model.status : 'disabled'}</span>
+                <div className={`w-2 h-2 rounded-full animate-pulse ${m.status === 'online' && m.enabled ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
+                <span className="text-[9px] font-black uppercase tracking-widest text-white/20">{m.enabled ? m.status : 'disabled'}</span>
             </div>
             <span className="text-[9px] font-black uppercase tracking-widest text-white/10">v.1.0.4-LTS</span>
         </div>
@@ -655,7 +658,7 @@ export const SettingsView: React.FC = () => {
                            key={category.id}
                            category={category}
                            models={directModels.filter(m => m.type === category.id)}
-                           renderModelCard={renderDirectModelCard}
+                           renderModelCard={renderDirectModelCard as any}
                            emptyMessage={`No direct AI models of type "${category.label}" currently installed.`}
                          />
                        ))}
@@ -738,7 +741,7 @@ export const SettingsView: React.FC = () => {
                               key={category.id}
                               category={category}
                               models={aggregatorModels.filter(m => m.type === category.id)}
-                              renderModelCard={renderAggregatorModelCard}
+                              renderModelCard={renderAggregatorModelCard as any}
                               emptyMessage={`No aggregator models of type "${category.label}" currently injected.`}
                             />
                           ))}

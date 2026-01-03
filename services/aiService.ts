@@ -32,7 +32,7 @@ async function runGemini(prompt: string, modelName: string, apiKey: string): Pro
     const response = await result.response;
     const text = response.text();
     if (!text) throw new Error("Empty response");
-    return { text, sources: [], modelUsed: modelName };
+    return { text, sources: [], modelUsed: modelName, error: false };
   } catch (error) {
     console.error(`Gemini Error (${modelName}):`, error);
     return { text: "", sources: [], error: true };
@@ -52,7 +52,7 @@ async function runOpenAI(prompt: string, modelName: string, apiKey: string): Pro
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    return { text: data.choices[0].message.content, sources: [], modelUsed: modelName };
+    return { text: data.choices[0].message.content, sources: [], modelUsed: modelName, error: false };
   } catch (error) {
     console.error(`OpenAI Error (${modelName}):`, error);
     return { text: "", sources: [], error: true };
@@ -77,7 +77,7 @@ async function runAnthropic(prompt: string, modelName: string, apiKey: string): 
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    return { text: data.content[0].text, sources: [], modelUsed: modelName };
+    return { text: data.content[0].text, sources: [], modelUsed: modelName, error: false };
   } catch (error) {
     console.error(`Anthropic Error (${modelName}):`, error);
     return { text: "", sources: [], error: true };
@@ -92,11 +92,12 @@ export async function runShreeGen(prompt: string, modelType: string = 'fast'): P
   const directModels = savedDirect ? JSON.parse(savedDirect) : [];
   const aggregatorModels = savedAgg ? JSON.parse(savedAgg) : [];
   
-  // Combine all active models of the requested type
   const targetType = modelType === 'fast' ? 'Fast' : 'Thinking';
+  
+  // Combined logic for active models
   const activeModels = [
-    ...directModels.filter((m: any) => m.enabled && m.type === targetType),
-    ...aggregatorModels.filter((m: any) => m.enabled && m.type === targetType)
+    ...directModels.filter((m: any) => m.enabled && m.type === targetType && m.apiKey && m.apiKey !== 'AIzaSy...' && m.apiKey !== 'sk-...'),
+    ...aggregatorModels.filter((m: any) => m.enabled && m.type === targetType && m.apiKey)
   ];
 
   // If no models are configured or enabled in Admin, use a hardcoded fallback
