@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback, memo, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { logger } from '../../services/loggerService';
 import { ChatMessage, ChatSession } from './types.ts';
 import { MOCK_CHAT_HISTORY } from './data/constants.ts';
 import ComponentLoader from '../../components/ui/ComponentLoader.tsx';
@@ -32,6 +33,7 @@ const ShreeGenPage: React.FC<{ onBack: () => void }> = memo(({ onBack }) => {
   }, []);
 
   const handleSendMessage = useCallback(async (text: string, attachment: any, model: string) => {
+    logger.log('info', `Sending message to AI: ${text.substring(0, 50)}...`, 'AI');
     const timestamp = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     const newUserMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -52,6 +54,12 @@ const ShreeGenPage: React.FC<{ onBack: () => void }> = memo(({ onBack }) => {
 
     const result = await runShreeGen(text, model);
     
+    if (result.error) {
+      logger.log('error', `AI Error: ${result.text}`, 'AI');
+    } else {
+      logger.log('success', `AI Responded using ${result.modelUsed}`, 'AI');
+    }
+
     const aiResponse: ChatMessage = {
       id: `ai-${Date.now()}`,
       sender: 'ai',
