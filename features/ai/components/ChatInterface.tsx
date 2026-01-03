@@ -209,7 +209,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   )}
 
                   <ReactMarkdown 
-                    className="prose prose-invert prose-p:leading-relaxed prose-pre:bg-[#050505] prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl"
+                    components={{
+                      p: ({ children }) => <p className="leading-relaxed mb-4 last:mb-0">{children}</p>,
+                      pre: ({ children }) => <pre className="bg-[#050505] border border-white/10 rounded-xl p-4 overflow-x-auto my-4">{children}</pre>,
+                      code: ({ children }) => <code className="bg-white/10 rounded px-1.5 py-0.5 font-mono text-xs">{children}</code>
+                    }}
                   >
                     {msg.text}
                   </ReactMarkdown>
