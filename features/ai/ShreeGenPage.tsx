@@ -55,8 +55,9 @@ const ShreeGenPage: React.FC<{ onBack: () => void }> = memo(({ onBack }) => {
     const aiResponse: ChatMessage = {
       id: `ai-${Date.now()}`,
       sender: 'ai',
-      text: result.text,
+      text: result.text || (result.error ? "Error: Neural connection failed. Please check your API keys." : "No response from AI."),
       timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+      model: result.modelUsed as any
     };
     
     setMessages((prev) => {

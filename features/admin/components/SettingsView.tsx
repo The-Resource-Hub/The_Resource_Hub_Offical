@@ -321,12 +321,22 @@ export const SettingsView: React.FC = () => {
   // Modal State
   const [selectedDetailModel, setSelectedDetailModel] = useState<AIModel | AggregatorModel | null>(null);
 
-  // Initialize key states
+  // Load/Save Persistence
   useEffect(() => {
-    const keys: Record<string, string> = {};
-    directModels.forEach(m => keys[m.id] = m.apiKey);
-    setModelKeys(keys);
+    const savedDirect = localStorage.getItem('shree_direct_models');
+    if (savedDirect) setDirectModels(JSON.parse(savedDirect));
+    
+    const savedAgg = localStorage.getItem('shree_aggregator_models');
+    if (savedAgg) setAggregatorModels(JSON.parse(savedAgg));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('shree_direct_models', JSON.stringify(directModels));
+  }, [directModels]);
+
+  useEffect(() => {
+    localStorage.setItem('shree_aggregator_models', JSON.stringify(aggregatorModels));
+  }, [aggregatorModels]);
 
   const handleKeyChange = (id: string, val: string) => {
     setModelKeys(prev => ({ ...prev, [id]: val }));
