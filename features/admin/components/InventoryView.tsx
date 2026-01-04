@@ -1,31 +1,31 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PRODUCTS } from '../../../data/constants.ts';
+import { dbService } from '../../../services/dbService';
 import { AdminIcons } from '../assets/AdminIcons.tsx';
 
 export const InventoryView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'critical'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [inventory, setInventory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // Injection Wizard State
-  const [step, setStep] = useState(1);
-  const [assetType, setAssetType] = useState<'online' | 'physical' | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    primaryImage: '',
-    secondaryImages: [''],
-    category: 'Audio',
-    price: '',
-    stock: ''
-  });
+  useEffect(() => {
+    const unsubscribe = dbService.subscribe('products', (data) => {
+      setInventory(data);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
-  const inventory = PRODUCTS.map(p => ({
-    ...p,
-    stock: Math.floor(Math.random() * 50),
-    lastRestock: '2023-10-15'
-  }));
+  const handleInjectAsset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await dbService.add('products', {
+      ...formData,
+      type: assetType
+    });
+    resetWizard();
+  };
 
   const criticalStock = inventory.filter(p => p.stock < 10);
 
