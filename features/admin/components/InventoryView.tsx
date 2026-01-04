@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../../../services/dbService';
@@ -9,7 +8,18 @@ export const InventoryView: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [inventory, setInventory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
+  const [step, setStep] = useState(1);
+  const [assetType, setAssetType] = useState<'online' | 'physical' | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    primaryImage: '',
+    secondaryImages: [''],
+    category: 'Audio',
+    price: '',
+    stock: ''
+  });
+
   useEffect(() => {
     const unsubscribe = dbService.subscribe('products', (data) => {
       setInventory(data);
@@ -22,12 +32,14 @@ export const InventoryView: React.FC = () => {
     e.preventDefault();
     await dbService.add('products', {
       ...formData,
-      type: assetType
+      type: assetType,
+      stock: parseInt(formData.stock) || 0,
+      price: parseFloat(formData.price) || 0
     });
     resetWizard();
   };
 
-  const criticalStock = inventory.filter(p => p.stock < 10);
+  const criticalStock = inventory.filter(p => (p.stock || 0) < 10);
 
   const resetWizard = () => {
     setShowAddModal(false);
@@ -44,6 +56,8 @@ export const InventoryView: React.FC = () => {
     });
   };
 
+  const displayList = activeTab === 'all' ? inventory : criticalStock;
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
@@ -52,6 +66,12 @@ export const InventoryView: React.FC = () => {
           <p className="text-xs text-white/30 font-bold uppercase tracking-widest mt-1">Global Asset Repository v2.0</p>
         </div>
         <div className="flex gap-3">
+          <button 
+            onClick={() => setActiveTab(activeTab === 'all' ? 'critical' : 'all')}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'critical' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-white/5 text-white/30'}`}
+          >
+            {activeTab === 'critical' ? 'Showing Critical' : 'Check Health'}
+          </button>
           <button 
             onClick={() => setShowAddModal(true)}
             className="px-6 py-3 rounded-xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-cyan-400 transition-all flex items-center gap-2 shadow-xl shadow-cyan-500/10"
@@ -63,32 +83,45 @@ export const InventoryView: React.FC = () => {
 
       <div className="bg-[#080808] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-white/[0.02]">
-              <tr>
-                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Asset</th>
-                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Category</th>
-                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Stock Level</th>
-                <th className="p-6 text-right text-[10px] font-black uppercase tracking-widest text-white/30">Edit</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {inventory.map((product) => (
-                <tr key={product.id} className="hover:bg-white/[0.01] transition-colors group">
-                  <td className="p-6 flex items-center gap-4">
-                    <img src={product.image} className="w-10 h-10 rounded-lg object-cover bg-white/5 border border-white/5" alt="" />
-                    <div>
-                      <div className="font-bold text-white text-sm">{product.name}</div>
-                      <div className="text-[10px] text-white/30 font-mono">UID-{product.id}</div>
-                    </div>
-                  </td>
-                  <td className="p-6"><span className="text-[10px] font-bold text-white/40 uppercase bg-white/5 px-2 py-1 rounded">{product.category}</span></td>
-                  <td className="p-6 text-white/70 text-sm font-bold">{product.stock} Units</td>
-                  <td className="p-6 text-right"><button className="p-2.5 rounded-xl bg-white/5 text-white/40 hover:text-white transition-all"><AdminIcons.Edit /></button></td>
+          {loading ? (
+            <div className="p-20 text-center text-white/20 uppercase tracking-widest animate-pulse font-black">Syncing with Cloud...</div>
+          ) : (
+            <table className="w-full text-left">
+              <thead className="bg-white/[0.02]">
+                <tr>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Asset</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Category</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-widest text-white/30">Stock Level</th>
+                  <th className="p-6 text-right text-[10px] font-black uppercase tracking-widest text-white/30">Edit</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {displayList.map((product) => (
+                  <tr key={product.id} className="hover:bg-white/[0.01] transition-colors group">
+                    <td className="p-6 flex items-center gap-4">
+                      <img src={product.primaryImage || product.image} className="w-10 h-10 rounded-lg object-cover bg-white/5 border border-white/5" alt="" />
+                      <div>
+                        <div className="font-bold text-white text-sm">{product.name}</div>
+                        <div className="text-[10px] text-white/30 font-mono">UID-{product.id.substring(0,8)}</div>
+                      </div>
+                    </td>
+                    <td className="p-6"><span className="text-[10px] font-bold text-white/40 uppercase bg-white/5 px-2 py-1 rounded">{product.category}</span></td>
+                    <td className="p-6">
+                      <span className={`text-sm font-bold ${product.stock < 10 ? 'text-red-500' : 'text-white/70'}`}>
+                        {product.stock} Units
+                      </span>
+                    </td>
+                    <td className="p-6 text-right"><button className="p-2.5 rounded-xl bg-white/5 text-white/40 hover:text-white transition-all"><AdminIcons.Edit /></button></td>
+                  </tr>
+                ))}
+                {displayList.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="p-20 text-center text-white/10 uppercase tracking-widest font-black">No Assets Found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -138,7 +171,53 @@ export const InventoryView: React.FC = () => {
                     </div>
                   </motion.div>
                 )}
-                {/* Simplified step 2 for brevity while fixing core error */}
+                
+                {step === 2 && (
+                   <motion.form 
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    onSubmit={handleInjectAsset}
+                    className="space-y-4"
+                   >
+                     <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Asset Name</label>
+                         <input 
+                           type="text" 
+                           required
+                           value={formData.name}
+                           onChange={e => setFormData({...formData, name: e.target.value})}
+                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 outline-none" 
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Price ($)</label>
+                         <input 
+                           type="number" 
+                           required
+                           value={formData.price}
+                           onChange={e => setFormData({...formData, price: e.target.value})}
+                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 outline-none" 
+                         />
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Stock Units</label>
+                         <input 
+                           type="number" 
+                           required
+                           value={formData.stock}
+                           onChange={e => setFormData({...formData, stock: e.target.value})}
+                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 outline-none" 
+                         />
+                       </div>
+                     <div className="pt-6">
+                        <button type="submit" className="w-full py-4 bg-cyan-500 text-black font-black uppercase tracking-widest rounded-2xl hover:bg-cyan-400 transition-all">
+                          Inject into Database
+                        </button>
+                     </div>
+                   </motion.form>
+                )}
               </AnimatePresence>
             </motion.div>
           </div>
