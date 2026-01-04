@@ -3,10 +3,11 @@ import React, { useState, memo, useMemo, useEffect } from 'react';
 import SearchBar from '../../components/ui/SearchBar.tsx';
 import ProductGrid from '../../components/product/ProductGrid.tsx';
 import { SlidersHorizontal, Zap } from 'lucide-react';
-import { PRODUCTS, MAIN_FILTERS } from '../../data/constants.ts';
+import { MAIN_FILTERS } from '../../data/constants.ts';
 import FilterModal from '../../components/ui/FilterModal.tsx';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Product } from '../../types/index.ts';
+import { dbService } from '../../services/dbService';
 
 interface StorePageProps {
   onMenuClick: () => void;
@@ -17,6 +18,7 @@ interface StorePageProps {
 const StorePage: React.FC<StorePageProps> = memo(({ onAdminTrigger, onViewProduct }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { scrollY } = useScroll();
@@ -24,16 +26,18 @@ const StorePage: React.FC<StorePageProps> = memo(({ onAdminTrigger, onViewProduc
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   useEffect(() => {
-    // Faster fake load to get user into content quicker
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    const unsubscribe = dbService.subscribe('products', (data) => {
+      setProducts(data);
+      setIsLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
   const filteredProducts = useMemo(() => {
     return activeFilter === 'all' 
-      ? PRODUCTS 
-      : PRODUCTS.filter(p => p.category.toLowerCase() === activeFilter.toLowerCase());
-  }, [activeFilter]);
+      ? products 
+      : products.filter(p => p.category.toLowerCase() === activeFilter.toLowerCase());
+  }, [activeFilter, products]);
 
   return (
     <div className="pb-20 will-change-scroll">

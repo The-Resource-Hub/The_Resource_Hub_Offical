@@ -49,7 +49,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ balance: propBalance }) => {
     };
   }, []);
 
-  const balance = profile?.balance ?? propBalance;
+  const balance = profile?.balance ?? 0;
   const stats = profile?.stats ?? {
     gameWinnings: 0,
     shortLinks: 0,
