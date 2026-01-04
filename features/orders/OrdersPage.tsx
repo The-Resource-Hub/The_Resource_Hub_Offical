@@ -1,15 +1,10 @@
-
-import React, { useState, memo, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, Package, Truck, CheckCircle, Clock, 
   Search, Filter, ExternalLink, Wallet, RefreshCw, Download
 } from 'lucide-react';
-
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { orderService } from '../../services/userService';
-// ... other imports
 
 const TABS = ['All Orders', 'In Progress', 'Completed', 'Returns'];
 
@@ -20,7 +15,8 @@ const OrdersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const mockUid = "MOCK_USER_ID"; // Replace with actual auth UID
+    // In a real app, this would come from Auth context
+    const mockUid = "MOCK_USER_ID";
     const unsubscribe = orderService.subscribeToUserOrders(mockUid, (data) => {
       setOrders(data);
       setLoading(false);
@@ -33,7 +29,7 @@ const OrdersPage: React.FC = () => {
       if (activeTab === 'In Progress' && (order.status === 'Delivered' || order.status === 'Cancelled')) return false;
       if (activeTab === 'Completed' && order.status !== 'Delivered') return false;
       if (activeTab === 'Returns' && order.status !== 'Returned') return false; 
-      if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.items.some((i: any) => i.name.toLowerCase().includes(searchQuery.toLowerCase()))) return false;
+      if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.items?.some((i: any) => i.name.toLowerCase().includes(searchQuery.toLowerCase()))) return false;
       return true;
     });
   }, [activeTab, searchQuery, orders]);
@@ -45,10 +41,19 @@ const OrdersPage: React.FC = () => {
       case 'Processing': return { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', icon: Clock };
       default: return { color: 'text-gray-400', bg: 'bg-gray-500/10', border: 'border-gray-500/20', icon: Package };
     }
-  }, []); // No dependencies, can be memoized once
+  }, []);
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } };
   const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } };
+
+  if (loading) {
+    return (
+      <div className="w-full h-[60vh] flex flex-col items-center justify-center gap-4 text-white/20">
+        <RefreshCw size={48} className="animate-spin text-cyan-500" />
+        <span className="text-xs font-black uppercase tracking-[0.3em]">Accessing Order Vault...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto pt-8 pb-20 px-4 md:px-8">
@@ -64,17 +69,6 @@ const OrdersPage: React.FC = () => {
                     </h1>
                     <p className="text-white/40 max-w-md">Real-time tracking of your digital and physical assets.</p>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                    <div className="p-4 rounded-2xl bg-[#111] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all">
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><Wallet size={20} /></div>
-                        <div><p className="text-[10px] text-white/30 font-bold uppercase tracking-wider">Total Spent</p><p className="text-xl font-bold text-white">$1,883.50</p></div>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[#111] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all">
-                        <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400"><ShoppingBag size={20} /></div>
-                        <div><p className="text-[10px] text-white/30 font-bold uppercase tracking-wider">Total Orders</p><p className="text-xl font-bold text-white">4</p></div>
-                    </div>
-                </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4 justify-between items-center p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
@@ -86,9 +80,8 @@ const OrdersPage: React.FC = () => {
                 <div className="flex items-center gap-3 w-full lg:w-auto">
                     <div className="relative flex-1 lg:w-64">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
-                        <input type="text" placeholder="Search Order ID or Item..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:border-white/30 outline-none transition-all placeholder:text-white/20" />
+                        <input type="text" placeholder="Search Order ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:border-white/30 outline-none transition-all placeholder:text-white/20" />
                     </div>
-                    <button className="p-2.5 rounded-xl bg-[#0a0a0a] border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all"><Filter size={18} /></button>
                 </div>
             </div>
         </motion.div>
@@ -96,7 +89,7 @@ const OrdersPage: React.FC = () => {
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
             <AnimatePresence mode="popLayout">
                 {filteredOrders.length > 0 ? (
-                    filteredOrders.map((order) => {
+                    filteredOrders.map((order: any) => {
                         const status = getStatusStyle(order.status);
                         const StatusIcon = status.icon;
                         return (
@@ -106,34 +99,38 @@ const OrdersPage: React.FC = () => {
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-3">
-                                                <span className="font-mono text-lg font-bold text-white tracking-wider">{order.id}</span>
+                                                <span className="font-mono text-lg font-bold text-white tracking-wider">#{order.id.substring(0,8).toUpperCase()}</span>
                                                 <span className="text-white/20 text-xs">●</span>
-                                                <span className="text-white/40 text-sm font-medium">{order.date}</span>
+                                                <span className="text-white/40 text-sm font-medium">{new Date(order.createdAt).toLocaleDateString()}</span>
                                             </div>
                                             <div className={`lg:hidden flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider ${status.bg} ${status.color} ${status.border}`}><StatusIcon size={12} /> {order.status}</div>
                                         </div>
                                         <div className="flex flex-wrap gap-4">
-                                            {order.items.map((item, idx) => (
+                                            {order.items?.map((item: any, idx: number) => (
                                                 <div key={idx} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors w-full sm:w-auto">
-                                                    <div className="w-12 h-12 rounded-lg bg-black overflow-hidden shrink-0"><img src={item.image} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover opacity-80" /></div>
-                                                    <div><p className="text-sm font-bold text-white leading-tight">{item.name}</p><p className="text-xs text-white/40 mt-1">Qty: {item.qty}</p></div>
+                                                    <div className="w-12 h-12 rounded-lg bg-black overflow-hidden shrink-0">
+                                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-80" />
+                                                    </div>
+                                                    <div><p className="text-sm font-bold text-white leading-tight">{item.name}</p><p className="text-xs text-white/40 mt-1">Qty: {item.qty || 1}</p></div>
                                                 </div>
                                             ))}
+                                            {!order.items && (
+                                                <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
+                                                    <div className="w-12 h-12 rounded-lg bg-black flex items-center justify-center text-white/20"><Package size={24} /></div>
+                                                    <div><p className="text-sm font-bold text-white leading-tight">{order.productName || 'Premium Asset'}</p></div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end justify-between gap-6 border-t border-white/5 pt-6 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-8 min-w-[200px]">
                                         <div className="hidden lg:flex flex-col items-end">
                                             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider mb-2 ${status.bg} ${status.color} ${status.border}`}><StatusIcon size={12} /> {order.status}</div>
-                                            {order.tracking && <p className="text-[10px] text-white/30 font-mono tracking-widest flex items-center gap-1">TRK: {order.tracking} <ExternalLink size={8} /></p>}
                                         </div>
                                         <div className="flex flex-col items-end w-full">
                                             <p className="text-[10px] text-white/30 uppercase font-bold tracking-wider mb-1">Total Amount</p>
-                                            <p className="text-2xl font-black text-white mb-4">${order.total.toFixed(2)}</p>
+                                            <p className="text-2xl font-black text-white mb-4">${parseFloat(order.amount).toFixed(2)}</p>
                                             <div className="flex items-center gap-2 w-full">
                                                 <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-cyan-400 transition-colors"><RefreshCw size={14} /> Reorder</button>
-                                                <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/50 hover:text-white hover:border-white/30 transition-all" title="Download Invoice">
-                                                   <Download size={16} />
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -145,7 +142,7 @@ const OrdersPage: React.FC = () => {
                     <motion.div variants={item} className="text-center py-24 border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
                         <Package size={48} className="mx-auto text-white/10 mb-4" />
                         <h3 className="text-lg font-bold text-white/50">No orders found</h3>
-                        <p className="text-sm text-white/30">Try adjusting your filters.</p>
+                        <p className="text-sm text-white/30 uppercase font-bold tracking-widest">Your digital history is clear. Start exploring assets today.</p>
                     </motion.div>
                 )}
             </AnimatePresence>
