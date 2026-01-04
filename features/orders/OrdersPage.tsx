@@ -15,13 +15,20 @@ const OrdersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would come from Auth context
     const mockUid = "MOCK_USER_ID";
     const unsubscribe = orderService.subscribeToUserOrders(mockUid, (data) => {
       setOrders(data);
       setLoading(false);
     });
-    return unsubscribe;
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const filteredOrders = useMemo(() => {
