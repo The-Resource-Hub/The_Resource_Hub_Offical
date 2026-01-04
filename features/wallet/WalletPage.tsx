@@ -1,6 +1,7 @@
 
-import React, { useState, memo } from 'react'; 
+import React, { useState, useEffect, memo } from 'react'; 
 import { motion, AnimatePresence } from 'framer-motion';
+import { userService, walletService, UserProfile } from '../../services/userService';
 import { 
   ArrowUpRight, 
   ArrowDownLeft, 
@@ -17,29 +18,44 @@ import {
   Download
 } from 'lucide-react';
 
-import ThreeDCard from '../../components/ui/ThreeDCard'; // ThreeDCard is CSS-only, no lazy needed.
+import ThreeDCard from '../../components/ui/ThreeDCard';
 
 interface WalletPageProps {
   balance: number;
 }
 
-const WalletPage: React.FC<WalletPageProps> = ({ balance }) => {
+const WalletPage: React.FC<WalletPageProps> = ({ balance: propBalance }) => {
   const [showVirtualCard, setShowVirtualCard] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock Data
-  const stats = {
-    gameWinnings: 1250.00,
-    shortLinks: 340.50,
-    referrals: 850.00,
-    expenses: 420.00
+  useEffect(() => {
+    // In a real app, we'd get the current user ID from Auth
+    const mockUid = "MOCK_USER_ID"; 
+    
+    const unsubProfile = userService.subscribeToProfile(mockUid, (p) => {
+      setProfile(p);
+      setLoading(false);
+    });
+
+    const unsubTxs = walletService.subscribeToTransactions(mockUid, (txs) => {
+      setTransactions(txs);
+    });
+
+    return () => {
+      unsubProfile();
+      unsubTxs();
+    };
+  }, []);
+
+  const balance = profile?.balance ?? propBalance;
+  const stats = profile?.stats ?? {
+    gameWinnings: 0,
+    shortLinks: 0,
+    referrals: 0,
+    expenses: 0
   };
-
-  const transactions = [
-    { id: 'TXN-8821', type: 'deposit', title: 'Game Prize', date: 'Today, 10:23 AM', amount: '+$45.00', status: 'Completed', logo: <Gamepad2 size={16} />, method: 'System' },
-    { id: 'TXN-7734', type: 'purchase', title: 'Premium Assets', date: 'Yesterday, 4:15 PM', amount: '-$120.00', status: 'Completed', logo: <CreditCard size={16} />, method: 'Visa' },
-    { id: 'TXN-5592', type: 'deposit', title: 'Short Link Payout', date: 'Oct 24, 2023', amount: '+$15.50', status: 'Completed', logo: <LinkIcon size={16} />, method: 'AdNet' },
-    { id: 'TXN-2210', type: 'deposit', title: 'Referral Bonus', date: 'Oct 22, 2023', amount: '+$25.00', status: 'Completed', logo: <Users size={16} />, method: 'Affiliate' },
-  ];
 
   const container = {
     hidden: { opacity: 0 },
@@ -219,34 +235,45 @@ const WalletPage: React.FC<WalletPageProps> = ({ balance }) => {
          </div>
 
          <div className="divide-y divide-white/5">
-            {transactions.map((tx) => (
-               <div key={tx.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.03] transition-colors group">
+            {loading ? (
+              <div className="p-10 flex flex-col items-center justify-center gap-4 text-white/20">
+                <Loader2 size={32} className="animate-spin text-cyan-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Accessing Vault...</span>
+              </div>
+            ) : transactions.length > 0 ? (
+              transactions.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.03] transition-colors group">
                   <div className="flex items-center gap-4">
                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center border border-white/5 ${
                         tx.type === 'deposit' 
                            ? 'bg-emerald-500/5 text-emerald-400 border-emerald-500/20' 
                            : 'bg-white/5 text-white/60'
                      }`}>
-                        {tx.logo}
+                        {tx.type === 'deposit' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
                      </div>
                      <div>
                         <h4 className="font-bold text-white text-sm mb-0.5">{tx.title}</h4>
                         <div className="flex items-center gap-2">
-                           <span className="text-[10px] text-white/30 font-mono">{tx.date}</span>
+                           <span className="text-[10px] text-white/30 font-mono">{tx.date || new Date(tx.timestamp).toLocaleString()}</span>
                            <span className="text-[10px] text-white/30 bg-white/5 px-1.5 rounded">{tx.method}</span>
                         </div>
                      </div>
                   </div>
                   <div className="text-right">
                      <p className={`font-mono font-bold text-base ${tx.type === 'deposit' ? 'text-emerald-400' : 'text-white'}`}>
-                        {tx.amount}
+                        {tx.type === 'deposit' ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
                      </p>
                      <p className="text-[9px] text-white/20 uppercase font-bold tracking-wider mt-0.5">
                         {tx.status}
                      </p>
                   </div>
                </div>
-            ))}
+              ))
+            ) : (
+              <div className="p-10 text-center text-white/20 uppercase tracking-widest text-xs font-black animate-pulse">
+                No Transactions Found
+              </div>
+            )}
          </div>
       </motion.div>
     </motion.div>
