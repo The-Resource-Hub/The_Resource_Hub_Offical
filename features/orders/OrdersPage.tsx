@@ -6,67 +6,37 @@ import {
   Search, Filter, ExternalLink, Wallet, RefreshCw, Download
 } from 'lucide-react';
 
-const ORDERS = [
-  {
-    id: '#ORD-9281-X',
-    items: [
-      { name: 'Premium Wireless Headphones', image: 'https://picsum.photos/seed/audio1/200/200', qty: 1 },
-      { name: 'Alum. Headphone Stand', image: 'https://picsum.photos/seed/stand1/200/200', qty: 1 }
-    ],
-    total: 329.00,
-    date: 'Oct 24, 2023',
-    status: 'Delivered',
-    tracking: 'TRK-8829102'
-  },
-  {
-    id: '#ORD-8821-B',
-    items: [
-       { name: 'Mechanical Keyboard Kit (Pro)', image: 'https://picsum.photos/seed/kb1/200/200', qty: 1 }
-    ],
-    total: 159.00,
-    date: 'Oct 20, 2023',
-    status: 'Shipping',
-    tracking: 'TRK-1120039'
-  },
-  {
-    id: '#ORD-7732-A',
-    items: [
-       { name: 'Ergonomic Mesh Chair', image: 'https://picsum.photos/seed/chair1/200/200', qty: 1 }
-    ],
-    total: 450.00,
-    date: 'Oct 18, 2023',
-    status: 'Processing',
-    tracking: null
-  },
-  {
-    id: '#ORD-1102-C',
-    items: [
-       { name: '4K OLED Monitor', image: 'https://picsum.photos/seed/mon1/200/200', qty: 1 },
-       { name: 'Monitor Arm', image: 'https://picsum.photos/seed/arm1/200/200', qty: 1 },
-       { name: 'HDMI 2.1 Cable', image: 'https://picsum.photos/seed/cable1/200/200', qty: 2 }
-    ],
-    total: 945.50,
-    date: 'Sep 15, 2023',
-    status: 'Delivered',
-    tracking: 'TRK-9921002'
-  }
-];
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { orderService } from '../../services/userService';
+// ... other imports
 
 const TABS = ['All Orders', 'In Progress', 'Completed', 'Returns'];
 
 const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('All Orders');
   const [searchQuery, setSearchQuery] = useState('');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const mockUid = "MOCK_USER_ID"; // Replace with actual auth UID
+    const unsubscribe = orderService.subscribeToUserOrders(mockUid, (data) => {
+      setOrders(data);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   const filteredOrders = useMemo(() => {
-    return ORDERS.filter(order => {
+    return orders.filter(order => {
       if (activeTab === 'In Progress' && (order.status === 'Delivered' || order.status === 'Cancelled')) return false;
       if (activeTab === 'Completed' && order.status !== 'Delivered') return false;
       if (activeTab === 'Returns' && order.status !== 'Returned') return false; 
-      if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.items.some(i => i.name.toLowerCase().includes(searchQuery.toLowerCase()))) return false;
+      if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.items.some((i: any) => i.name.toLowerCase().includes(searchQuery.toLowerCase()))) return false;
       return true;
     });
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, orders]);
 
   const getStatusStyle = useCallback((status: string) => {
     switch (status) {

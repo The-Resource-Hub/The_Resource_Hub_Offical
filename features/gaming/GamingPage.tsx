@@ -21,14 +21,7 @@ interface Game {
   players: string;
 }
 
-const GAMES: Game[] = [
-  { id: 1, title: "Neuro Nexus", category: "Logic", image: "https://picsum.photos/seed/logic1/200/200", level: 5, xp: 850, maxXp: 1000, rating: 4.9, players: "12k" },
-  { id: 101, title: "Circuit Breaker", category: "Logic", image: "https://picsum.photos/seed/logic2/200/200", level: 2, xp: 120, maxXp: 500, rating: 4.5, players: "3k" },
-  { id: 2, title: "Memory Matrix 3D", category: "Memory", image: "https://picsum.photos/seed/memory1/200/200", level: 3, xp: 300, maxXp: 800, rating: 4.8, players: "8.5k" },
-  { id: 3, title: "Focus Flow", category: "Attention", image: "https://picsum.photos/seed/focus1/200/200", level: 6, xp: 1200, maxXp: 2000, rating: 4.7, players: "20k" },
-  { id: 4, title: "Quantum Calc", category: "Math", image: "https://picsum.photos/seed/math1/200/200", level: 9, xp: 2800, maxXp: 3500, rating: 4.9, players: "5k" },
-  { id: 7, title: "Reflex Racer", category: "Reflex", image: "https://picsum.photos/seed/race1/200/200", level: 15, xp: 500, maxXp: 6000, rating: 4.9, players: "32k" },
-];
+const GAMES: Game[] = [];
 
 const CATEGORIES = [
   { id: 'all', label: 'All', icon: Brain },
