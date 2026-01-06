@@ -35,20 +35,13 @@ const ProductSkeleton = () => (
   </div>
 );
 
-import { Package } from 'lucide-react';
-// ... existing imports
-
 const ProductGrid: React.FC<ProductGridProps> = ({ products, onViewDetails, isLoading = false }) => {
   if (isLoading) {
-    // ... skeleton code
-  }
-
-  if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 px-4 bg-white/[0.01] border border-dashed border-white/10 rounded-[2.5rem] text-center">
-        <Package size={64} className="text-white/10 mb-6" />
-        <h3 className="text-2xl font-black text-white/50 uppercase tracking-tighter mb-2">No product available in this time</h3>
-        <p className="text-sm text-white/30 max-w-xs uppercase font-bold tracking-widest">Our digital vault is currently empty. Check back later for new arrivals.</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <ProductSkeleton key={`skeleton-${index}`} />
+        ))}
       </div>
     );
   }

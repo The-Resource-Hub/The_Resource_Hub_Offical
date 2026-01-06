@@ -31,6 +31,12 @@ const OrdersPage: React.FC = () => {
     };
   }, []);
 
+  const stats = useMemo(() => {
+    const totalSpend = orders.reduce((sum, order) => sum + (parseFloat(order.amount) || 0), 0);
+    const totalCount = orders.length;
+    return { totalSpend, totalCount };
+  }, [orders]);
+
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
       if (activeTab === 'In Progress' && (order.status === 'Delivered' || order.status === 'Cancelled')) return false;
@@ -75,6 +81,16 @@ const OrdersPage: React.FC = () => {
                       <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-bold tracking-widest text-white/50 uppercase">History</div>
                     </h1>
                     <p className="text-white/40 max-w-md">Real-time tracking of your digital and physical assets.</p>
+                </div>
+                <div className="flex gap-4">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl min-w-[140px]">
+                    <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mb-1">Total Spend</p>
+                    <p className="text-2xl font-black text-white">${stats.totalSpend.toFixed(2)}</p>
+                  </div>
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl min-w-[140px]">
+                    <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mb-1">Total Orders</p>
+                    <p className="text-2xl font-black text-white">{stats.totalCount}</p>
+                  </div>
                 </div>
             </div>
 
@@ -149,7 +165,7 @@ const OrdersPage: React.FC = () => {
                     <motion.div variants={item} className="text-center py-24 border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
                         <Package size={48} className="mx-auto text-white/10 mb-4" />
                         <h3 className="text-lg font-bold text-white/50">No orders found</h3>
-                        <p className="text-sm text-white/30 uppercase font-bold tracking-widest">Your digital history is clear. Start exploring assets today.</p>
+                        <p className="text-sm text-white/30 uppercase font-bold tracking-widest">You haven't placed any orders yet. Start your journey today.</p>
                     </motion.div>
                 )}
             </AnimatePresence>
