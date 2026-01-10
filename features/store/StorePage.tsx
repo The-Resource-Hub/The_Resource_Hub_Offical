@@ -1,8 +1,7 @@
-
 import React, { useState, memo, useMemo, useEffect } from 'react';
 import SearchBar from '../../components/ui/SearchBar.tsx';
 import ProductGrid from '../../components/product/ProductGrid.tsx';
-import { SlidersHorizontal, Zap } from 'lucide-react';
+import { SlidersHorizontal, Zap, PackageSearch } from 'lucide-react';
 import { MAIN_FILTERS } from '../../data/constants.ts';
 import FilterModal from '../../components/ui/FilterModal.tsx';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -45,7 +44,6 @@ const StorePage: React.FC<StorePageProps> = memo(({ onAdminTrigger, onViewProduc
       <section className="relative h-[65vh] flex flex-col items-center justify-center overflow-hidden mb-12">
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[#020202]" />
-          {/* Performance Optimized Background: Using CSS gradient instead of multiple div blur layers */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1)_0%,rgba(0,0,0,0)_70%)]" />
           <div className="absolute top-[10%] right-[10%] w-[30vw] h-[30vw] bg-purple-600/5 blur-[120px] rounded-full" />
           <div className="absolute inset-0 opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat pointer-events-none" />
@@ -113,11 +111,25 @@ const StorePage: React.FC<StorePageProps> = memo(({ onAdminTrigger, onViewProduc
       </div>
 
       <div className="max-w-7xl mx-auto px-4">
-        <ProductGrid 
-          products={filteredProducts} 
-          onViewDetails={onViewProduct}
-          isLoading={isLoading}
-        />
+        {isLoading ? (
+          <ProductGrid products={[]} isLoading={true} />
+        ) : filteredProducts.length > 0 ? (
+          <ProductGrid 
+            products={filteredProducts} 
+            onViewDetails={onViewProduct}
+            isLoading={false}
+          />
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-20 bg-white/[0.02] rounded-3xl border border-dashed border-white/10"
+          >
+            <PackageSearch size={48} className="mx-auto text-white/10 mb-4" />
+            <h3 className="text-xl font-bold text-white mb-1 uppercase tracking-tight">No products available</h3>
+            <p className="text-white/40 text-xs uppercase tracking-widest font-bold">Try adjusting your filters or check back later</p>
+          </motion.div>
+        )}
       </div>
 
       {isFilterModalOpen && (
