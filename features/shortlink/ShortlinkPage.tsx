@@ -42,25 +42,26 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
 
   useEffect(() => {
     const mockUid = "MOCK_USER_ID";
+    console.log("[ShortlinkPage] Subscribing to profile for UID:", mockUid);
     const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
+      console.log("[ShortlinkPage] Profile updated:", p);
       setProfile(p);
     });
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
-  const balance = profile?.balance ?? propBalance;
-  const totalShortlinkEarnings = profile?.stats?.shortLinks ?? MOCK_ACTIVE_LINKS.reduce((sum, link) => sum + link.earnings, 0);
+  const balance = profile?.balance ?? 0;
+  const totalShortlinkEarnings = profile?.stats?.shortLinks ?? 0;
+  const activeCount = profile?.stats?.referrals ?? 0; // Using referrals as a placeholder if activeLinks count isn't in stats
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
   const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="w-full max-w-5xl mx-auto pt-8 pb-20 relative px-4">
-      {/* Background ambience */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-indigo-900/10 blur-[120px] rounded-full -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-cyan-900/10 blur-[120px] rounded-full -z-10 pointer-events-none" />
 
-      {/* Page Title */}
       <motion.div variants={item} className="text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6 backdrop-blur-md">
            <Scissors size={12} /> Quantum Hub
@@ -71,7 +72,6 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
         <p className="text-white/40 max-w-xl mx-auto text-lg">Your earnings dashboard for all active shortlinks.</p>
       </motion.div>
 
-      {/* Balance Box */}
       <motion.div variants={item} className="mb-16">
         <div className="relative w-full bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 overflow-hidden group text-center shadow-2xl shadow-indigo-900/10">
            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#0a0a0a] to-[#0a0a0a] opacity-50" />
@@ -81,7 +81,7 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
               <div className="flex flex-col items-center">
                  <p className="text-indigo-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Current Balance</p>
                  <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                    ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </h2>
                  <button 
                     onClick={onWalletClick}
@@ -96,18 +96,17 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
               <div className="flex flex-col items-center">
                  <p className="text-cyan-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Shortlink Earnings</p>
                  <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
-                    ${totalShortlinkEarnings.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ${totalShortlinkEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </h2>
                  <span className="mt-2 text-xs text-white/40 flex items-center gap-1">
                     <BarChart3 size={12} />
-                    {MOCK_ACTIVE_LINKS.length} Active Links
+                    {activeCount} Active Links
                  </span>
               </div>
            </div>
         </div>
       </motion.div>
 
-      {/* Active Links */}
       <motion.div variants={item}>
         <div className="flex items-center justify-between mb-6">
            <h3 className="text-xl font-bold text-white flex items-center gap-2"><BarChart3 className="text-cyan-400" /> Active Shortlinks</h3>
