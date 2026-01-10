@@ -45,7 +45,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeView, onNaviga
                                 animate={{ opacity: 1, x: 0 }}
                                 className="font-black tracking-[0.2em] text-[10px] uppercase"
                             >
-                                <span className="text-red-500">ADMIN</span>
+                                <span className="text-red-600">ADMIN</span>
                                 <span className="text-white">ISTRATION</span>
                             </motion.span>
                         </div>

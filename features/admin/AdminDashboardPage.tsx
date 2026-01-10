@@ -86,7 +86,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
               animate={{ opacity: 1, y: 0 }}
               className="text-sm font-black uppercase tracking-[0.4em]"
             >
-              <span className="text-red-500">ADMIN</span>
+              <span className="text-red-600">ADMIN</span>
               <span className="text-white">ISTRATION</span>
             </motion.h2>
           </div>

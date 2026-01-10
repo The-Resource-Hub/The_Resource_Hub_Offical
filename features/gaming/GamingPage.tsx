@@ -21,7 +21,6 @@ interface Game {
   players: string;
 }
 
-// Keeping only one game card as requested
 const GAMES: Game[] = [
   {
     id: 1,
@@ -136,21 +135,14 @@ const GamingPage: React.FC<GamingPageProps> = ({ onMenuClick, onWalletClick, onB
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    // Force immediate and real-time sync with database user profile
     const mockUid = "MOCK_USER_ID";
-    console.log("[GamingPage] Subscribing to profile for UID:", mockUid);
     const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
-      console.log("[GamingPage] Profile updated:", p);
       setProfile(p);
     });
-    return () => {
-      console.log("[GamingPage] Unsubscribing from profile");
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
-  // Sync navbar balance with real-time profile data - fallback to 0 if both unavailable
-  const currentBalance = profile?.balance ?? 0;
+  const balance = profile?.balance ?? propBalance;
 
   const filteredGames = activeTab === 'all' 
     ? GAMES 
@@ -166,7 +158,7 @@ const GamingPage: React.FC<GamingPageProps> = ({ onMenuClick, onWalletClick, onB
         <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500 tracking-widest">GAMING ZONE</h1>
         <button onClick={onWalletClick} className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
           <Wallet size={16} className="text-white/60" />
-          <span className="text-sm font-bold text-white">${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          <span className="text-sm font-bold text-white">${balance.toLocaleString()}</span>
         </button>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar">
