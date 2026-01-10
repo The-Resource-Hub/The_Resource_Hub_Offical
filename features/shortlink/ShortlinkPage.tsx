@@ -1,15 +1,14 @@
-
-import React, { useState, memo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, memo } from 'react';
+import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
   BarChart3, 
   Globe, 
   ExternalLink,
   Scissors,
-  Wallet, // Added for View Wallet button
-  Gift, // Added for "Explore Rewards" button
+  Wallet,
 } from 'lucide-react';
+import { userService, UserProfile } from '../../services/userService';
 
 // --- TYPES ---
 interface ActiveLink {
@@ -19,7 +18,7 @@ interface ActiveLink {
   clicks: number;
   region: string;
   status: string;
-  earnings: number; // Added earnings per link
+  earnings: number;
 }
 
 // --- MOCK DATA ---
@@ -32,16 +31,25 @@ const MOCK_ACTIVE_LINKS: ActiveLink[] = [
 
 interface ShortlinkPageProps {
   balance: number;
-  updateBalance: (newBalance: number) => void; // Keeping this for future potential actions on this page
+  updateBalance: (newBalance: number) => void;
   onWalletClick: () => void;
-  onViewRewards: () => void; // New prop to navigate to rewards store
+  onViewRewards: () => void;
 }
 
-const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance, onWalletClick, onViewRewards }) => {
-  const [activeLinks] = useState<ActiveLink[]>(MOCK_ACTIVE_LINKS); // Removed setActiveLinks as it's static now
+const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onWalletClick, onViewRewards }) => {
+  const [activeLinks] = useState<ActiveLink[]>(MOCK_ACTIVE_LINKS);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  // Calculate total shortlink earnings
-  const totalShortlinkEarnings = MOCK_ACTIVE_LINKS.reduce((sum, link) => sum + link.earnings, 0);
+  useEffect(() => {
+    const mockUid = "MOCK_USER_ID";
+    const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
+      setProfile(p);
+    });
+    return unsubscribe;
+  }, []);
+
+  const balance = profile?.balance ?? propBalance;
+  const totalShortlinkEarnings = profile?.stats?.shortLinks ?? MOCK_ACTIVE_LINKS.reduce((sum, link) => sum + link.earnings, 0);
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
   const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
@@ -83,7 +91,7 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance, onWalletClick, o
                  </button>
               </div>
 
-              <div className="w-px h-20 bg-white/10 hidden md:block" /> {/* Divider */}
+              <div className="w-px h-20 bg-white/10 hidden md:block" />
 
               <div className="flex flex-col items-center">
                  <p className="text-cyan-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Shortlink Earnings</p>
@@ -97,16 +105,6 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance, onWalletClick, o
               </div>
            </div>
         </div>
-        
-        {/* New button to navigate to Shortlink Store */}
-        <motion.button 
-           variants={item}
-           onClick={onViewRewards}
-           className="mt-8 w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-black uppercase tracking-wider text-lg shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-cyan-600 transition-all active:scale-98 flex items-center justify-center gap-3"
-        >
-            <Gift size={24} /> Explore Quantum Rewards
-        </motion.button>
-
       </motion.div>
 
       {/* Active Links */}
