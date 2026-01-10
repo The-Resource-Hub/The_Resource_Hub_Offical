@@ -43,9 +43,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeView, onNaviga
                             <motion.span 
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="font-black tracking-[0.2em] text-[10px] uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-white/50 to-white bg-[length:200%_auto] animate-shimmer"
+                                className="font-black tracking-[0.2em] text-[10px] uppercase"
                             >
-                                Administration
+                                <span className="text-red-500">ADMIN</span>
+                                <span className="text-white">ISTRATION</span>
                             </motion.span>
                         </div>
                         <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">

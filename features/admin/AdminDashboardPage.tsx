@@ -84,9 +84,10 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
             <motion.h2 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-sm font-black uppercase tracking-[0.4em] bg-clip-text text-transparent bg-gradient-to-r from-white/60 via-white to-white/60 bg-[length:200%_auto] animate-shimmer"
+              className="text-sm font-black uppercase tracking-[0.4em]"
             >
-              Administration <span className="text-white/20">/</span> {activeView}
+              <span className="text-red-500">ADMIN</span>
+              <span className="text-white">ISTRATION</span>
             </motion.h2>
           </div>
 
