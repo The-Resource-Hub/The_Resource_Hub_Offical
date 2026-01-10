@@ -81,18 +81,16 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
                 <MenuIcon size={20} />
               </button>
             )}
-            <h2 className="text-sm font-black uppercase tracking-[0.4em] text-white/40">
-              Terminal <span className="text-white/20">/</span> {activeView}
-            </h2>
+            <motion.h2 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm font-black uppercase tracking-[0.4em] bg-clip-text text-transparent bg-gradient-to-r from-white/60 via-white to-white/60 bg-[length:200%_auto] animate-shimmer"
+            >
+              Administration <span className="text-white/20">/</span> {activeView}
+            </motion.h2>
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setActiveView('shree-prime')}
-              className="px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest hover:bg-cyan-500 hover:text-black transition-all"
-            >
-              Prime Node
-            </button>
             <div className="hidden md:flex flex-col items-end">
               <span className="text-xs font-bold text-white">Preet Bopche</span>
               <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Master Admin</span>

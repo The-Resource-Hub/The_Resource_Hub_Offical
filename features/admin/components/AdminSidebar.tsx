@@ -40,7 +40,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeView, onNaviga
                     <div className="p-6 md:p-8 flex flex-col h-full w-[280px]">
                         <div className="flex items-center gap-3 mb-8 md:mb-12">
                             <AdminIcons.Alert />
-                            <span className="font-black tracking-[0.2em] text-[10px] uppercase">System Node</span>
+                            <motion.span 
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="font-black tracking-[0.2em] text-[10px] uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-white/50 to-white bg-[length:200%_auto] animate-shimmer"
+                            >
+                                Administration
+                            </motion.span>
                         </div>
                         <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
                             {SIDEBAR_ITEMS.map(item => (
