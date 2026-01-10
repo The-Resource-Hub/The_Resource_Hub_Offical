@@ -24,11 +24,14 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
   const [activeView, setActiveView] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Preet Bopche', email: 'admin@nexus.io', role: 'Owner', status: 'Active', avatar: 'https://picsum.photos/seed/admin/100/100', plan: 'Unlimited' },
-    { id: 2, name: 'Alex Designer', email: 'alex@work.com', role: 'User', status: 'Active', avatar: 'https://picsum.photos/seed/u1/100/100', plan: 'Pro' },
-    { id: 3, name: 'Sarah Connor', email: 'sarah@resistance.io', role: 'User', status: 'Banned', avatar: 'https://picsum.photos/seed/u2/100/100', plan: 'Free' },
-  ]);
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const unsubUsers = dbService.subscribe('users', (data) => {
+      setUsers(data);
+    });
+    return unsubUsers;
+  }, []);
 
   const [orders, setOrders] = useState([
     { id: '#ORD-8821', user: 'Alex Designer', amount: '$299.00', status: 'Processing', date: 'Oct 24, 2023', items: 2 },
