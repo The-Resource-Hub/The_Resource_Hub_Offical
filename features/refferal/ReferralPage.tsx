@@ -1,11 +1,13 @@
 import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Gift, Users, Trophy, Zap, Check, Star, Gem } from 'lucide-react';
+import { Copy, Gift, Users, Trophy, Zap, Check, Gem } from 'lucide-react';
 import { userService, UserProfile } from '../../services/userService';
 
 const ReferralPage: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  
+  // Real invite link would ideally come from user profile, but keeping logic for now
   const inviteLink = "resourcehub.io/ref/u/alex_design";
 
   useEffect(() => {
@@ -16,9 +18,10 @@ const ReferralPage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  const totalEarnings = profile?.stats?.gameWinnings ?? 1250.00;
-  const networkSize = profile?.stats?.referrals ?? 142;
-  const currentTier = profile?.stats?.referrals && profile.stats.referrals > 100 ? "Diamond" : "Gold";
+  // Removed all fake/default values except 0 for empty states
+  const totalEarnings = profile?.stats?.gameWinnings ?? 0;
+  const networkSize = profile?.stats?.referrals ?? 0;
+  const currentTier = profile?.stats?.referrals && profile.stats.referrals > 100 ? "Diamond" : "Silver";
   const progressPercent = Math.min((networkSize / 200) * 100, 100);
 
   const handleCopy = () => {
@@ -134,7 +137,7 @@ const ReferralPage: React.FC = () => {
                <div className="mt-6">
                  <div className="flex justify-between text-[10px] uppercase font-bold text-white/30 mb-1">
                     <span>Progress</span>
-                    <span>{networkSize} / 200 Refferals</span>
+                    <span>{networkSize} / 200 Referrals</span>
                  </div>
                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <motion.div 
