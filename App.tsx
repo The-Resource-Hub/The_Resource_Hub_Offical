@@ -20,6 +20,7 @@ const AdminDashboardPage = lazy(() => import('./features/admin/AdminDashboardPag
 const PremiumPage = lazy(() => import('./features/primium/PremiumPage.tsx'));
 const GamingPage = lazy(() => import('./features/gaming/GamingPage.tsx'));
 const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
+const SupportPage = lazy(() => import('./features/support/SupportPage.tsx'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 
@@ -77,6 +78,8 @@ const App: React.FC = () => {
         return <PremiumPage onBack={() => setCurrentView('home')} />;
       case 'gaming':
         return <GamingPage balance={balance} onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onWalletClick={() => setCurrentView('wallet')} />;
+      case 'support':
+        return <SupportPage />;
       case 'shree-gen-api':
         return <ShreeGenApiPage onBack={() => setCurrentView('home')} />;
       case 'admin-dashboard':
@@ -86,7 +89,7 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api'].includes(currentView);
+  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'support'].includes(currentView);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020202]">
