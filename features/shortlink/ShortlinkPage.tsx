@@ -121,15 +121,6 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
            </div>
         </div>
         
-        {/* New button to navigate to Shortlink Store */}
-        <motion.button 
-           variants={item}
-           onClick={onViewRewards}
-           className="mt-8 w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-black uppercase tracking-wider text-lg shadow-lg shadow-indigo-500/20 hover:from-indigo-600 hover:to-cyan-600 transition-all active:scale-98 flex items-center justify-center gap-3"
-        >
-            <Gift size={24} /> Explore Quantum Rewards
-        </motion.button>
-
       </motion.div>
 
       {/* Active Links */}
