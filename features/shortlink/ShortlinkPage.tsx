@@ -1,6 +1,7 @@
 
-import React, { useState, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { userService, UserProfile } from '../../services/userService';
 import { 
   ArrowRight, 
   BarChart3, 
@@ -37,11 +38,23 @@ interface ShortlinkPageProps {
   onViewRewards: () => void; // New prop to navigate to rewards store
 }
 
-const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance, onWalletClick, onViewRewards }) => {
+const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onWalletClick, onViewRewards }) => {
   const [activeLinks] = useState<ActiveLink[]>(MOCK_ACTIVE_LINKS); // Removed setActiveLinks as it's static now
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const mockUid = "MOCK_USER_ID";
+    const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
+      setProfile(p);
+    });
+    return unsubscribe;
+  }, []);
+
+  const balance = profile?.balance ?? propBalance;
+  const totalShortlinkEarnings = profile?.stats?.shortLinks ?? 0;
 
   // Calculate total shortlink earnings
-  const totalShortlinkEarnings = MOCK_ACTIVE_LINKS.reduce((sum, link) => sum + link.earnings, 0);
+  // const totalShortlinkEarnings = MOCK_ACTIVE_LINKS.reduce((sum, link) => sum + link.earnings, 0);
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
   const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };

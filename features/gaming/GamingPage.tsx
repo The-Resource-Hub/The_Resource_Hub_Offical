@@ -158,7 +158,7 @@ const GamingPage: React.FC<GamingPageProps> = ({ onMenuClick, onWalletClick, onB
         <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500 tracking-widest">GAMING ZONE</h1>
         <button onClick={onWalletClick} className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
           <Wallet size={16} className="text-white/60" />
-          <span className="text-sm font-bold text-white">${balance.toLocaleString()}</span>
+          <span className="text-sm font-bold text-white">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </button>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar">
