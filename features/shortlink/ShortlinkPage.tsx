@@ -96,7 +96,7 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
               <div className="flex flex-col items-center">
                  <p className="text-indigo-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Current Balance</p>
                  <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter drop-shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                    ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </h2>
                  <button 
                     onClick={onWalletClick}
@@ -111,11 +111,11 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
               <div className="flex flex-col items-center">
                  <p className="text-cyan-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Shortlink Earnings</p>
                  <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
-                    ${totalShortlinkEarnings.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ${totalShortlinkEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </h2>
                  <span className="mt-2 text-xs text-white/40 flex items-center gap-1">
                     <BarChart3 size={12} />
-                    {MOCK_ACTIVE_LINKS.length} Active Links
+                    {activeLinks.length} Active Links
                  </span>
               </div>
            </div>
