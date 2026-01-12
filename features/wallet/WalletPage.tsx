@@ -65,6 +65,11 @@ const WalletPage: React.FC<WalletPageProps> = ({ balance: propBalance }) => {
           </motion.button>
         </div>
       </div>
+
+      <div className="mb-8">
+        <ThreeDCard />
+      </div>
+
       <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden">
         <div className="px-6 py-5 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
           <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3"><History size={16} className="text-cyan-400" /> History</h3>
