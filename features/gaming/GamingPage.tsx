@@ -193,7 +193,7 @@ const GamingPage: React.FC<GamingPageProps> = ({
     return unsubscribe;
   }, []);
 
-  const balance = profile?.balance ?? propBalance;
+  const balance = profile?.balance ?? 0;
 
   const filteredGames =
     activeTab === "all"

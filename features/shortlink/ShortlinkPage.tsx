@@ -60,7 +60,7 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
     };
   }, []);
 
-  const balance = profile?.balance ?? propBalance;
+  const balance = profile?.balance ?? 0;
   const totalShortlinkEarnings = profile?.stats?.shortLinks ?? 0;
 
   // Calculate total shortlink earnings

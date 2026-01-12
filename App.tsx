@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
-  const [balance, setBalance] = useState(2845.50);
+  const [balance, setBalance] = useState(0);
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
 
