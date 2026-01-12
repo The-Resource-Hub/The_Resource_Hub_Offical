@@ -1,11 +1,59 @@
 
-import React, { useState, memo } from 'react';
-import { motion } from 'framer-motion';
-import { Copy, Gift, Users, Trophy, Zap, Check, Star, Gem } from 'lucide-react';
+import React, { useState, memo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Copy, Gift, Users, Trophy, Zap, Check, Star, Gem, Info, ChevronRight } from 'lucide-react';
+import { userService, UserProfile } from '../../services/userService';
+
+const RANKS = [
+  { name: 'Bronze', color: 'from-orange-400 to-orange-700', minXp: 0 },
+  { name: 'Silver', color: 'from-slate-300 to-slate-500', minXp: 500 },
+  { name: 'Gold', color: 'from-yellow-400 to-yellow-600', minXp: 1500 },
+  { name: 'Diamond', color: 'from-cyan-400 to-blue-600', minXp: 3500 },
+];
+
+const getRankDetails = (xp: number) => {
+  let currentRankIndex = 0;
+  for (let i = RANKS.length - 1; i >= 0; i--) {
+    if (xp >= RANKS[i].minXp) {
+      currentRankIndex = i;
+      break;
+    }
+  }
+  
+  const currentRank = RANKS[currentRankIndex];
+  const nextRank = RANKS[currentRankIndex + 1];
+  
+  // 5 sub-ranks per tier
+  const xpInTier = xp - currentRank.minXp;
+  const tierRange = nextRank ? (nextRank.minXp - currentRank.minXp) : 5000;
+  const subRank = Math.min(5, Math.floor((xpInTier / tierRange) * 5) + 1);
+  
+  return {
+    rankName: `${currentRank.name} ${subRank}`,
+    tierName: currentRank.name,
+    color: currentRank.color,
+    progress: Math.min(100, (xpInTier / tierRange) * 100),
+    nextXp: nextRank ? nextRank.minXp : 'MAX',
+    currentXp: xp
+  };
+};
 
 const ReferralPage: React.FC = () => {
   const [copied, setCopied] = useState(false);
-  const inviteLink = "resourcehub.io/ref/u/alex_design";
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [showRankGuide, setShowRankGuide] = useState(false);
+  
+  useEffect(() => {
+    const mockUid = "MOCK_USER_ID";
+    const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
+      setProfile(p);
+    });
+    return unsubscribe;
+  }, []);
+
+  const referralStats = profile?.referralStats ?? { totalEarnings: 0, networkSize: 0, xp: 0 };
+  const rankInfo = getRankDetails(referralStats.xp);
+  const inviteLink = `resourcehub.io/ref/u/${profile?.referralCode ?? 'INVITE'}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -18,7 +66,7 @@ const ReferralPage: React.FC = () => {
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  const itemAnim = {
+  const itemAnim: any = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
   };
@@ -30,6 +78,53 @@ const ReferralPage: React.FC = () => {
       animate="show"
       className="w-full relative min-h-screen pb-20 overflow-hidden"
     >
+      <AnimatePresence>
+        {showRankGuide && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setShowRankGuide(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-[#0e0e0e] border border-white/10 rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl overflow-hidden relative"
+              onClick={e => e.stopPropagation()}
+            >
+               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500" />
+               <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tighter">Rank Progression Guide</h2>
+               <div className="space-y-4">
+                 {RANKS.map((r, i) => (
+                   <div key={r.name} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                     <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${r.color} flex items-center justify-center shadow-lg shadow-black/20`}>
+                           <Trophy size={18} className="text-white" />
+                        </div>
+                        <div>
+                           <p className="text-white font-black uppercase text-sm tracking-wider">{r.name}</p>
+                           <p className="text-white/30 text-[10px] font-bold">5 Sub-Ranks Available</p>
+                        </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-white/20 text-[10px] font-black uppercase mb-1">Unlocks At</p>
+                        <p className="text-cyan-400 font-mono font-bold text-sm">{r.minXp} XP</p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+               <button 
+                 onClick={() => setShowRankGuide(false)}
+                 className="w-full mt-8 py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-colors"
+               >
+                 Close Guide
+               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* CSS Background Ambience */}
       <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 -z-10 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 -z-10 pointer-events-none" />
@@ -101,9 +196,9 @@ const ReferralPage: React.FC = () => {
                </div>
                <div className="relative z-10">
                   <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Total Earnings</p>
-                  <h3 className="text-4xl font-black text-white mb-2">$1,250.00</h3>
+                  <h3 className="text-4xl font-black text-white mb-2">${referralStats.totalEarnings.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h3>
                   <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded inline-block">
-                     <Zap size={10} fill="currentColor" /> +12% this week
+                     <Zap size={10} fill="currentColor" /> Lifetime Commission
                   </div>
                </div>
                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-transparent opacity-50" />
@@ -115,40 +210,46 @@ const ReferralPage: React.FC = () => {
                </div>
                <div className="relative z-10">
                   <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Network Size</p>
-                  <h3 className="text-4xl font-black text-white mb-2">142</h3>
+                  <h3 className="text-4xl font-black text-white mb-2">{referralStats.networkSize}</h3>
                   <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold bg-cyan-400/10 px-2 py-1 rounded inline-block">
-                     <Users size={10} /> 5 new today
+                     <Users size={10} /> Active Referrals
                   </div>
                </div>
                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-transparent opacity-50" />
             </div>
 
-            <div className="relative p-8 rounded-3xl bg-[#111]/50 border border-white/10 overflow-hidden group hover:border-white/20 transition-all backdrop-blur-sm">
+            <button 
+              onClick={() => setShowRankGuide(true)}
+              className="relative p-8 rounded-3xl bg-[#111]/50 border border-white/10 overflow-hidden group hover:border-white/20 transition-all backdrop-blur-sm text-left group"
+            >
                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-700">
                   <Trophy size={120} />
                </div>
                <div className="relative z-10">
-                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Current Tier</p>
-                  <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-2">Diamond</h3>
-                  <div className="text-white/50 text-xs font-medium">
-                     Top 5% of affiliates
+                  <div className="flex justify-between items-start">
+                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Current Tier</p>
+                    <Info size={14} className="text-white/20 group-hover:text-white/50 transition-colors" />
+                  </div>
+                  <h3 className={`text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${rankInfo.color} mb-2`}>{rankInfo.rankName}</h3>
+                  <div className="text-white/50 text-xs font-medium flex items-center gap-1">
+                     View rank progression <ChevronRight size={10} />
                   </div>
                </div>
                <div className="mt-6">
                  <div className="flex justify-between text-[10px] uppercase font-bold text-white/30 mb-1">
                     <span>Progress</span>
-                    <span>900 / 1000 XP</span>
+                    <span>{rankInfo.currentXp} / {rankInfo.nextXp} XP</span>
                  </div>
                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
-                      whileInView={{ width: '90%' }}
+                      animate={{ width: `${rankInfo.progress}%` }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                      className={`h-full bg-gradient-to-r ${rankInfo.color}`}
                     />
                  </div>
                </div>
-            </div>
+            </button>
          </div>
       </motion.div>
     </motion.div>

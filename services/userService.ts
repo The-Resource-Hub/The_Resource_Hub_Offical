@@ -26,6 +26,11 @@ export interface UserProfile {
   lastLogin: string;
   referralCode: string;
   referredBy?: string;
+  referralStats: {
+    totalEarnings: number;
+    networkSize: number;
+    xp: number;
+  },
   stats: {
     gameWinnings: number;
     shortLinks: number;
@@ -53,6 +58,11 @@ export const userService = {
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         referralCode: user.uid.substring(0, 8).toUpperCase(),
+        referralStats: {
+          totalEarnings: 0,
+          networkSize: 0,
+          xp: 0
+        },
         stats: {
           gameWinnings: 0,
           shortLinks: 0,
