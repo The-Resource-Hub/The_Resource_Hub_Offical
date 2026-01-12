@@ -43,7 +43,27 @@ const WalletPage: React.FC<WalletPageProps> = ({ balance: propBalance }) => {
       </div>
       <div className="mb-8 relative w-full bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
         <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Available Balance</p>
-        <h2 className="text-6xl font-black text-white tracking-tighter">${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
+        <h2 className="text-6xl font-black text-white tracking-tighter mb-8">${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-40 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center gap-2 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-emerald-500/20"
+          >
+            <ArrowDownLeft size={16} />
+            Deposit
+          </motion.button>
+          
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-40 py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl flex items-center justify-center gap-2 text-white font-black uppercase tracking-widest text-[10px] transition-all"
+          >
+            <ArrowUpRight size={16} />
+            Withdraw
+          </motion.button>
+        </div>
       </div>
       <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden">
         <div className="px-6 py-5 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
