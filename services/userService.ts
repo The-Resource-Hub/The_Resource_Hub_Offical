@@ -47,7 +47,7 @@ export const userService = {
         displayName: user.displayName,
         photoURL: user.photoURL,
         phoneNumber: user.phoneNumber,
-        balance: 0,
+        balance: 100, // Giving some initial balance for testing
         role: 'user',
         status: 'active',
         createdAt: new Date().toISOString(),
@@ -74,6 +74,14 @@ export const userService = {
       if (doc.exists()) {
         callback(doc.data() as UserProfile);
       }
+    });
+  },
+
+  subscribeToUserShortlinks(uid: string, callback: (links: any[]) => void) {
+    const q = query(collection(db, `users/${uid}/shortlinks`), orderBy("createdAt", "desc"));
+    return onSnapshot(q, (snapshot) => {
+      const links = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      callback(links);
     });
   }
 };

@@ -39,15 +39,25 @@ interface ShortlinkPageProps {
 }
 
 const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onWalletClick, onViewRewards }) => {
-  const [activeLinks] = useState<ActiveLink[]>(MOCK_ACTIVE_LINKS); // Removed setActiveLinks as it's static now
+  const [activeLinks, setActiveLinks] = useState<any[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const mockUid = "MOCK_USER_ID";
-    const unsubscribe = userService.subscribeToProfile(mockUid, (p) => {
+    const unsubProfile = userService.subscribeToProfile(mockUid, (p) => {
       setProfile(p);
     });
-    return unsubscribe;
+    
+    const unsubLinks = userService.subscribeToUserShortlinks(mockUid, (links) => {
+      setActiveLinks(links);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubProfile();
+      unsubLinks();
+    };
   }, []);
 
   const balance = profile?.balance ?? propBalance;
@@ -129,26 +139,32 @@ const ShortlinkPage: React.FC<ShortlinkPageProps> = ({ balance: propBalance, onW
            <button className="text-xs font-bold text-white/30 hover:text-white uppercase tracking-widest transition-colors">View All Reports</button>
         </div>
         <div className="grid grid-cols-1 gap-4">
-           {activeLinks.map((link) => (
-             <div key={link.id} className="group bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
-                <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform"><Globe size={20} /></div>
-                   <div>
-                      <div className="flex items-center gap-2">
-                         <h4 className="font-bold text-white text-lg tracking-tight">{link.short}</h4>
-                         <a href="#" className="text-white/20 hover:text-white transition-colors"><ExternalLink size={12} /></a>
-                      </div>
-                      <p className="text-xs text-white/30 truncate max-w-[200px]">{link.original}</p>
-                   </div>
-                </div>
-                <div className="flex items-center gap-8 md:gap-12 pl-14 md:pl-0">
-                   <div><p className="text-[10px] uppercase font-bold text-white/20 mb-1">Total Clicks</p><p className="text-white font-mono font-bold">{link.clicks.toLocaleString()}</p></div>
-                   <div><p className="text-[10px] uppercase font-bold text-white/20 mb-1">Earnings</p><p className="text-emerald-400 font-mono font-bold">${link.earnings.toFixed(2)}</p></div>
-                   <div className="hidden md:block"><div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${link.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-yellow-500/10 text-yellow-400'}`}>{link.status}</div></div>
-                   <button className="p-2 hover:bg-white/10 rounded-lg text-white/20 hover:text-white transition-colors ml-auto"><ArrowRight size={18} /></button>
-                </div>
-             </div>
-           ))}
+           {loading ? (
+             <div className="py-20 text-center text-white/20 uppercase font-black tracking-widest text-xs">Loading Links...</div>
+           ) : activeLinks.length > 0 ? (
+             activeLinks.map((link) => (
+               <div key={link.id} className="group bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
+                  <div className="flex items-center gap-4">
+                     <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform"><Globe size={20} /></div>
+                     <div>
+                        <div className="flex items-center gap-2">
+                           <h4 className="font-bold text-white text-lg tracking-tight">{link.short}</h4>
+                           <a href="#" className="text-white/20 hover:text-white transition-colors"><ExternalLink size={12} /></a>
+                        </div>
+                        <p className="text-xs text-white/30 truncate max-w-[200px]">{link.original}</p>
+                     </div>
+                  </div>
+                  <div className="flex items-center gap-8 md:gap-12 pl-14 md:pl-0">
+                     <div><p className="text-[10px] uppercase font-bold text-white/20 mb-1">Total Clicks</p><p className="text-white font-mono font-bold">{link.clicks?.toLocaleString() ?? 0}</p></div>
+                     <div><p className="text-[10px] uppercase font-bold text-white/20 mb-1">Earnings</p><p className="text-emerald-400 font-mono font-bold">${(link.earnings ?? 0).toFixed(2)}</p></div>
+                     <div className="hidden md:block"><div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${link.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-yellow-500/10 text-yellow-400'}`}>{link.status}</div></div>
+                     <button className="p-2 hover:bg-white/10 rounded-lg text-white/20 hover:text-white transition-colors ml-auto"><ArrowRight size={18} /></button>
+                  </div>
+               </div>
+             ))
+           ) : (
+             <div className="py-20 text-center text-white/40 uppercase tracking-widest font-black text-xs">Currently no active links</div>
+           )}
         </div>
       </motion.div>
     </motion.div>
