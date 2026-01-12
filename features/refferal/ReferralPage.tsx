@@ -5,16 +5,16 @@ import { Copy, Gift, Users, Trophy, Zap, Check, Star, Gem, Info, ChevronRight } 
 import { userService, UserProfile } from '../../services/userService';
 
 const RANKS = [
-  { name: 'Bronze', color: 'from-orange-400 to-orange-700', minXp: 0 },
-  { name: 'Silver', color: 'from-slate-300 to-slate-500', minXp: 500 },
-  { name: 'Gold', color: 'from-yellow-400 to-yellow-600', minXp: 1500 },
-  { name: 'Diamond', color: 'from-cyan-400 to-blue-600', minXp: 3500 },
+  { name: 'Bronze', color: 'from-orange-400 to-orange-700', minNetwork: 0 },
+  { name: 'Silver', color: 'from-slate-300 to-slate-500', minNetwork: 10 },
+  { name: 'Gold', color: 'from-yellow-400 to-yellow-600', minNetwork: 50 },
+  { name: 'Diamond', color: 'from-cyan-400 to-blue-600', minNetwork: 200 },
 ];
 
-const getRankDetails = (xp: number) => {
+const getRankDetails = (networkSize: number) => {
   let currentRankIndex = 0;
   for (let i = RANKS.length - 1; i >= 0; i--) {
-    if (xp >= RANKS[i].minXp) {
+    if (networkSize >= RANKS[i].minNetwork) {
       currentRankIndex = i;
       break;
     }
@@ -23,18 +23,20 @@ const getRankDetails = (xp: number) => {
   const currentRank = RANKS[currentRankIndex];
   const nextRank = RANKS[currentRankIndex + 1];
   
-  // 5 sub-ranks per tier
-  const xpInTier = xp - currentRank.minXp;
-  const tierRange = nextRank ? (nextRank.minXp - currentRank.minXp) : 5000;
-  const subRank = Math.min(5, Math.floor((xpInTier / tierRange) * 5) + 1);
+  // 5 sub-ranks per tier based on network size
+  const networkInTier = networkSize - currentRank.minNetwork;
+  const tierRange = nextRank ? (nextRank.minNetwork - currentRank.minNetwork) : 500;
+  const progress = Math.min(100, (networkInTier / tierRange) * 100);
+  const subRank = Math.min(5, Math.floor((progress / 100) * 5) + 1);
   
   return {
     rankName: `${currentRank.name} ${subRank}`,
     tierName: currentRank.name,
     color: currentRank.color,
-    progress: Math.min(100, (xpInTier / tierRange) * 100),
-    nextXp: nextRank ? nextRank.minXp : 'MAX',
-    currentXp: xp
+    progress,
+    subRank,
+    nextNetwork: nextRank ? nextRank.minNetwork : 'MAX',
+    currentNetwork: networkSize
   };
 };
 
@@ -52,7 +54,7 @@ const ReferralPage: React.FC = () => {
   }, []);
 
   const referralStats = profile?.referralStats ?? { totalEarnings: 0, networkSize: 0, xp: 0 };
-  const rankInfo = getRankDetails(referralStats.xp);
+  const rankInfo = getRankDetails(referralStats.networkSize);
   const inviteLink = `resourcehub.io/ref/u/${profile?.referralCode ?? 'INVITE'}`;
 
   const handleCopy = () => {
@@ -109,7 +111,7 @@ const ReferralPage: React.FC = () => {
                      </div>
                      <div className="text-right">
                         <p className="text-white/20 text-[10px] font-black uppercase mb-1">Unlocks At</p>
-                        <p className="text-cyan-400 font-mono font-bold text-sm">{r.minXp} XP</p>
+                        <p className="text-cyan-400 font-mono font-bold text-sm">{r.minNetwork} Network</p>
                      </div>
                    </div>
                  ))}
@@ -231,6 +233,15 @@ const ReferralPage: React.FC = () => {
                     <Info size={14} className="text-white/20 group-hover:text-white/50 transition-colors" />
                   </div>
                   <h3 className={`text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${rankInfo.color} mb-2`}>{rankInfo.rankName}</h3>
+                  <div className="flex gap-1 mb-2">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star 
+                        key={s} 
+                        size={12} 
+                        className={s <= rankInfo.subRank ? "text-yellow-400 fill-yellow-400" : "text-white/10"} 
+                      />
+                    ))}
+                  </div>
                   <div className="text-white/50 text-xs font-medium flex items-center gap-1">
                      View rank progression <ChevronRight size={10} />
                   </div>
@@ -238,7 +249,7 @@ const ReferralPage: React.FC = () => {
                <div className="mt-6">
                  <div className="flex justify-between text-[10px] uppercase font-bold text-white/30 mb-1">
                     <span>Progress</span>
-                    <span>{rankInfo.currentXp} / {rankInfo.nextXp} XP</span>
+                    <span>{rankInfo.currentNetwork} / {rankInfo.nextNetwork} Network</span>
                  </div>
                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <motion.div 
