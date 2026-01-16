@@ -79,7 +79,7 @@ const App: React.FC = () => {
       case 'gaming':
         return <GamingPage balance={balance} onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onWalletClick={() => setCurrentView('wallet')} />;
       case 'support':
-        return <SupportPage />;
+        return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'shree-gen-api':
         return <ShreeGenApiPage onBack={() => setCurrentView('home')} />;
       case 'admin-dashboard':
