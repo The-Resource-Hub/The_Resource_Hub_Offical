@@ -1,7 +1,7 @@
 
 import React, { useState, memo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck, Menu, ArrowLeft, Paperclip, Smile, StickyNote } from 'lucide-react';
+import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck, Menu, ArrowLeft, Paperclip, Smile, LayoutGrid } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -113,12 +113,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, onBack }) => {
       {/* Input Bar */}
       <div className="p-4 bg-[#0e0e0e] border-t border-white/5 pb-8 sm:pb-4">
         <div className="max-w-3xl mx-auto flex items-center gap-2">
-          <button className="p-2 text-white/40 hover:text-white transition-colors">
-            <Smile size={20} />
-          </button>
-          <button className="p-2 text-white/40 hover:text-white transition-colors">
-            <StickyNote size={20} />
-          </button>
+          {chat.type === 'global' ? (
+            <>
+              <button className="p-2 text-white/40 hover:text-white transition-colors">
+                <Smile size={20} />
+              </button>
+              <button className="p-2 text-white/40 hover:text-white transition-colors">
+                <LayoutGrid size={20} />
+              </button>
+            </>
+          ) : (
+            <button className="p-2 text-white/40 hover:text-white transition-colors">
+              <Paperclip size={20} />
+            </button>
+          )}
           <div className="flex-1 relative">
             <input 
               type="text" 
