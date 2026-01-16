@@ -1,7 +1,7 @@
 
 import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck } from 'lucide-react';
+import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck, Menu } from 'lucide-react';
 
 interface ChatItem {
   id: string;
@@ -42,6 +42,9 @@ const SupportPage: React.FC = () => {
       {/* Navbar */}
       <div className="px-6 py-4 bg-[#0e0e0e] border-b border-white/5 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3">
+          <button className="p-2 -ml-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
+            <Menu size={20} />
+          </button>
           <div className="p-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/20">
             <LifeBuoy size={20} className="text-orange-400" />
           </div>
@@ -51,9 +54,6 @@ const SupportPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
-            <MoreVertical size={20} />
-          </button>
         </div>
       </div>
 
