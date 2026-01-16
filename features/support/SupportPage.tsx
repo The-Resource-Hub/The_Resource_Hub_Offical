@@ -1,7 +1,7 @@
 
 import React, { useState, memo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck, Menu, ArrowLeft, Paperclip, Smile } from 'lucide-react';
+import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck, Menu, ArrowLeft, Paperclip, Smile, StickyNote } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -114,7 +114,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, onBack }) => {
       <div className="p-4 bg-[#0e0e0e] border-t border-white/5 pb-8 sm:pb-4">
         <div className="max-w-3xl mx-auto flex items-center gap-2">
           <button className="p-2 text-white/40 hover:text-white transition-colors">
-            <Paperclip size={20} />
+            <Smile size={20} />
+          </button>
+          <button className="p-2 text-white/40 hover:text-white transition-colors">
+            <StickyNote size={20} />
           </button>
           <div className="flex-1 relative">
             <input 
@@ -123,11 +126,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, onBack }) => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Write a message..."
-              className="w-full bg-[#1a1a1a] border border-white/5 rounded-full py-2.5 px-10 text-sm focus:outline-none focus:border-orange-500/50 transition-all"
+              className="w-full bg-[#1a1a1a] border border-white/5 rounded-full py-2.5 px-4 text-sm focus:outline-none focus:border-orange-500/50 transition-all"
             />
-            <button className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
-              <Smile size={20} />
-            </button>
           </div>
           <button 
             onClick={handleSendMessage}
