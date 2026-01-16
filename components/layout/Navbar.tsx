@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Menu, Bell, ShoppingCart, User } from 'lucide-react';
+import { Menu, Bell, ShoppingCart, User, LayoutGrid } from 'lucide-react';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -12,9 +12,10 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
       <div className="flex items-center gap-4">
         <button 
           onClick={onMenuClick}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+          className="p-2 hover:bg-white/10 rounded-full transition-colors text-white flex items-center gap-2"
         >
           <Menu size={24} />
+          <span className="text-sm font-bold uppercase tracking-wider hidden sm:block">Menu</span>
         </button>
         <div className="hidden md:block">
           <span className="text-xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent tracking-tighter">

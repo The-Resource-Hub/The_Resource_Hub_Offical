@@ -1,7 +1,7 @@
 
 import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Globe, Send, User, Headphones, Search, MoreVertical, CheckCheck } from 'lucide-react';
+import { MessageSquare, Globe, Send, User, LifeBuoy, Search, MoreVertical, CheckCheck } from 'lucide-react';
 
 interface ChatItem {
   id: string;
@@ -43,7 +43,7 @@ const SupportPage: React.FC = () => {
       <div className="px-6 py-4 bg-[#0e0e0e] border-b border-white/5 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/20">
-            <Headphones size={20} className="text-orange-400" />
+            <LifeBuoy size={20} className="text-orange-400" />
           </div>
           <div>
             <h1 className="text-xl font-black tracking-tighter uppercase">Support Center</h1>
@@ -51,9 +51,6 @@ const SupportPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
-            <Search size={20} />
-          </button>
           <button className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
             <MoreVertical size={20} />
           </button>
@@ -76,7 +73,7 @@ const SupportPage: React.FC = () => {
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
                   chat.type === 'support' ? 'bg-orange-500/10 text-orange-400' : 'bg-cyan-500/10 text-cyan-400'
                 }`}>
-                  {chat.type === 'support' ? <Headphones size={24} /> : <Globe size={24} />}
+                  {chat.type === 'support' ? <LifeBuoy size={24} /> : <Globe size={24} />}
                 </div>
                 {chat.status === 'online' && (
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-[#111] rounded-full" />
