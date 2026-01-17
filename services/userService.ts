@@ -36,10 +36,26 @@ export interface UserProfile {
     shortLinks: number;
     referrals: number;
     expenses: number;
-  }
+  },
+  apiKeys?: {
+    key: string;
+    createdAt: string;
+    label: string;
+  }[]
 }
 
 export const userService = {
+  // ... existing syncUser ...
+  async generateApiKey(uid: string, label: string) {
+    const userRef = doc(db, "users", uid);
+    const key = `sk_live_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+    const newKey = { key, label, createdAt: new Date().toISOString() };
+    
+    const userDoc = await getDoc(userRef);
+    const apiKeys = (userDoc.data()?.apiKeys || []);
+    await updateDoc(userRef, { apiKeys: [...apiKeys, newKey] });
+    return key;
+  },
   async syncUser(user: any) {
     if (!user) return null;
     const userRef = doc(db, "users", user.uid);

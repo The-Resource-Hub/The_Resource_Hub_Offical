@@ -20,6 +20,7 @@ const AdminDashboardPage = lazy(() => import('./features/admin/AdminDashboardPag
 const PremiumPage = lazy(() => import('./features/primium/PremiumPage.tsx'));
 const GamingPage = lazy(() => import('./features/gaming/GamingPage.tsx'));
 const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
+const ShreeGenApiGuidePage = lazy(() => import('./features/api/ShreeGenApiGuidePage.tsx'));
 const SupportPage = lazy(() => import('./features/support/SupportPage.tsx'));
 
 const App: React.FC = () => {
@@ -81,7 +82,9 @@ const App: React.FC = () => {
       case 'support':
         return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'shree-gen-api':
-        return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} />;
+        return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onGuideClick={() => setCurrentView('shree-gen-api-guide')} />;
+      case 'shree-gen-api-guide':
+        return <ShreeGenApiGuidePage onBack={() => setCurrentView('shree-gen-api')} />;
       case 'admin-dashboard':
         return isAdminAuth ? <AdminDashboardPage onLogout={handleAdminLogout} /> : <AdminLoginPage onLoginSuccess={handleAdminLogin} onClose={() => setCurrentView('home')} />;
       default:
@@ -89,7 +92,7 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'support'].includes(currentView);
+  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'shree-gen-api-guide', 'support'].includes(currentView);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020202]">
