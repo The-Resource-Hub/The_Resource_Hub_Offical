@@ -81,7 +81,7 @@ const App: React.FC = () => {
       case 'support':
         return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'shree-gen-api':
-        return <ShreeGenApiPage onBack={() => setCurrentView('home')} />;
+        return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'admin-dashboard':
         return isAdminAuth ? <AdminDashboardPage onLogout={handleAdminLogout} /> : <AdminLoginPage onLoginSuccess={handleAdminLogin} onClose={() => setCurrentView('home')} />;
       default:

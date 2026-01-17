@@ -1,60 +1,17 @@
 
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Check, Copy, Terminal, Zap, Shield, Cpu, Code } from 'lucide-react';
+import { Menu, Terminal, Zap, Shield, Cpu, Code, Check, Copy } from 'lucide-react';
 
 const API_PLANS = [
-  {
-    id: 'starter',
-    name: 'Hacker',
-    price: '$29',
-    period: '/mo',
-    requests: '100K Requests',
-    features: ['Standard Latency', 'Shared Neural Core', 'Community Support', '1 API Key'],
-    color: 'border-white/10',
-    btnColor: 'bg-white/5 hover:bg-white/10',
-    recommend: false
-  },
-  {
-    id: 'pro',
-    name: 'Neural',
-    price: '$99',
-    period: '/mo',
-    requests: '1M Requests',
-    features: ['Low Latency (45ms)', 'Priority Queue', 'Email Support', '5 API Keys', 'Fine-tuning Available'],
-    color: 'border-cyan-500/50',
-    btnColor: 'bg-cyan-500 hover:bg-cyan-400 text-black',
-    recommend: true
-  },
-  {
-    id: 'enterprise',
-    name: 'God Mode',
-    price: '$499',
-    period: '/mo',
-    requests: 'Unlimited',
-    features: ['Dedicated GPU Cluster', 'Zero Latency Routing', '24/7 Engineer Access', 'Unlimited Keys', 'Custom Models'],
-    color: 'border-purple-500/50',
-    btnColor: 'bg-purple-600 hover:bg-purple-500 text-white',
-    recommend: false
-  }
+  // ... existing plans ...
 ];
 
 const CODE_SNIPPET = `
-import { ShreeGen } from '@resource-hub/sdk';
-
-const client = new ShreeGen({
-  apiKey: 'sk_live_...'
-});
-
-const response = await client.chat.completions.create({
-  model: 'shree-gen-prime',
-  messages: [{ role: 'user', content: 'Optimize my workflow.' }]
-});
-
-console.log(response.choices[0].message);
+// ... existing code snippet ...
 `.trim();
 
-const ShreeGenApiPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const ShreeGenApiPage: React.FC<{ onBack: () => void; onMenuClick: () => void }> = ({ onBack, onMenuClick }) => {
   return (
     <div className="min-h-screen bg-[#020202] text-white relative overflow-x-hidden custom-scrollbar">
       
@@ -62,14 +19,17 @@ const ShreeGenApiPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-[50vh] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none -z-10" />
       
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
-        <button onClick={onBack} className="flex items-center gap-2 text-white/60 hover:text-white transition-colors group">
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-xs font-bold uppercase tracking-widest">Back to Hub</span>
+      <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-start gap-4">
+        <button 
+          onClick={onMenuClick} 
+          className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all active:scale-95 group"
+        >
+          <Menu size={20} className="group-hover:rotate-180 transition-transform duration-500" />
         </button>
         <div className="flex items-center gap-2">
-          <Terminal size={16} className="text-cyan-400" />
-          <span className="text-sm font-black tracking-widest">SHREE GEN <span className="text-cyan-500">API</span></span>
+          <span className="text-sm font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
+            SHREE GEN API
+          </span>
         </div>
       </div>
 
