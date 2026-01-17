@@ -3,12 +3,67 @@ import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, Terminal, Zap, Shield, Cpu, Code, Check, Copy } from 'lucide-react';
 
-const API_PLANS = [
-  // ... existing plans ...
+interface ApiPlan {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  requests: string;
+  features: string[];
+  color: string;
+  btnColor: string;
+  recommend: boolean;
+}
+
+const API_PLANS: ApiPlan[] = [
+  {
+    id: 'starter',
+    name: 'Hacker',
+    price: '$29',
+    period: '/mo',
+    requests: '100K Requests',
+    features: ['Standard Latency', 'Shared Neural Core', 'Community Support', '1 API Key'],
+    color: 'border-white/10',
+    btnColor: 'bg-white/5 hover:bg-white/10',
+    recommend: false
+  },
+  {
+    id: 'pro',
+    name: 'Neural',
+    price: '$99',
+    period: '/mo',
+    requests: '1M Requests',
+    features: ['Low Latency (45ms)', 'Priority Queue', 'Email Support', '5 API Keys', 'Fine-tuning Available'],
+    color: 'border-cyan-500/50',
+    btnColor: 'bg-cyan-500 hover:bg-cyan-400 text-black',
+    recommend: true
+  },
+  {
+    id: 'enterprise',
+    name: 'God Mode',
+    price: '$499',
+    period: '/mo',
+    requests: 'Unlimited',
+    features: ['Dedicated GPU Cluster', 'Zero Latency Routing', '24/7 Engineer Access', 'Unlimited Keys', 'Custom Models'],
+    color: 'border-purple-500/50',
+    btnColor: 'bg-purple-600 hover:bg-purple-500 text-white',
+    recommend: false
+  }
 ];
 
 const CODE_SNIPPET = `
-// ... existing code snippet ...
+import { ShreeGen } from '@resource-hub/sdk';
+
+const client = new ShreeGen({
+  apiKey: 'sk_live_...'
+});
+
+const response = await client.chat.completions.create({
+  model: 'shree-gen-prime',
+  messages: [{ role: 'user', content: 'Optimize my workflow.' }]
+});
+
+console.log(response.choices[0].message);
 `.trim();
 
 const ShreeGenApiPage: React.FC<{ onBack: () => void; onMenuClick: () => void }> = ({ onBack, onMenuClick }) => {
@@ -122,7 +177,7 @@ const ShreeGenApiPage: React.FC<{ onBack: () => void; onMenuClick: () => void }>
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className={`relative p-8 rounded-[2rem] bg-[#0a0a0a] border ${plan.color} ${plan.recommend ? 'shadow-2xl shadow-cyan-900/20 scale-105 z-10' : 'hover:border-white/20'}`}
+              className={`relative p-8 rounded-[2rem] bg-[#0a0a0a] border \${plan.color} \${plan.recommend ? 'shadow-2xl shadow-cyan-900/20 scale-105 z-10' : 'hover:border-white/20'}`}
             >
               {plan.recommend && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest shadow-lg">
@@ -147,7 +202,7 @@ const ShreeGenApiPage: React.FC<{ onBack: () => void; onMenuClick: () => void }>
                 ))}
               </ul>
 
-              <button className={`w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 ${plan.btnColor}`}>
+              <button className={`w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 \${plan.btnColor}`}>
                 Purchase Access
               </button>
             </motion.div>
@@ -160,4 +215,3 @@ const ShreeGenApiPage: React.FC<{ onBack: () => void; onMenuClick: () => void }>
 };
 
 export default memo(ShreeGenApiPage);
-              
