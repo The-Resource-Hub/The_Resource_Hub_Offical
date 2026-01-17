@@ -1,35 +1,33 @@
-# The Resource Hub - Premium Digital Store
+# The Resource Hub
 
-## Overview
-A high-performance storefront for premium digital assets built with React, TypeScript, and Vite. Features include product browsing, AI-powered assistant (Shree Gen), admin dashboard, wallet, referral system, and gaming features.
+Premium digital storefront for high-quality assets.
 
-## Project Structure
-- `/components` - Reusable UI components (layout, product, ui)
-- `/features` - Feature-based modules (admin, ai, gaming, orders, premium, referral, shortlink, store, wallet)
-- `/services` - API services (AI integration)
-- `/types` - TypeScript type definitions
-- `/utils` - Utility functions
+## Project Details
+- **Name:** The Resource Hub
+- **Official Domain:** [theresourcehub.in](https://theresourcehub.in)
+- **Status:** Live / Development
+- **Tech Stack:** React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons, Firebase.
 
-## Tech Stack
-- **Frontend**: React 19, TypeScript
-- **Build Tool**: Vite 7
-- **Styling**: Tailwind CSS (via CDN)
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **AI**: Google Generative AI
+## Key Features
+- **Digital Storefront:** Browse and purchase high-quality digital assets.
+- **Shree Gen AI:** Advanced AI assistant with multiple neural models.
+- **Quantum Shortlink:** Earn rewards by sharing shortened URLs.
+- **Affiliate Program:** Multi-tier referral system with commission tracking.
+- **Gaming Zone:** Integrated gaming experience for community engagement.
+- **Admin Dashboard:** Full-scale management of users, orders, and system logs.
 
-## Development
-- Run `npm run dev` to start the development server on port 5000
-- Run `npm run build` to build for production
-- Build output goes to `/dist`
+## Navigation Structure
+- **Home:** Main store gallery.
+- **Premium:** Subscription tiers and exclusive assets.
+- **Wallet:** Virtual currency management.
+- **Referral:** Invite system with rank progression.
+- **Shree Gen API:** Programmatic access to AI models.
+- **Support:** Direct line for user assistance.
 
-## Environment Variables
-- `VITE_GEMINI_API_KEY` - Google Gemini API key for AI features (optional)
+## Development Setup
+- Run `npm run dev` to start the development server on port 5000.
+- Ensure `VITE_GEMINI_API_KEY` is set in your environment variables for AI features.
+- Build output is located in the `/dist` directory.
 
-## Recent Changes
-- January 2, 2026: Initial Replit setup
-  - Configured Vite dev server on port 5000
-  - Fixed import paths for misspelled directories (refferal, primium)
-  - Updated AI service to use @google/generative-ai package
-  - Added TypeScript configuration
-  - Configured static deployment
+---
+© 2026 The Resource Hub. All rights reserved.
