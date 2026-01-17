@@ -79,3 +79,4 @@ The app follows a feature-based architecture with code splitting:
 ### Build Output
 - Production builds output to `/dist` directory
 - Static deployment configured for hosting
+- **Official Domain**: `theresourcehub.in`
