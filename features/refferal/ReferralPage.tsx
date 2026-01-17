@@ -55,7 +55,7 @@ const ReferralPage: React.FC = () => {
 
   const referralStats = profile?.referralStats ?? { totalEarnings: 0, networkSize: 0, xp: 0 };
   const rankInfo = getRankDetails(referralStats.networkSize);
-  const inviteLink = `resourcehub.io/ref/u/${profile?.referralCode ?? 'INVITE'}`;
+  const inviteLink = `theresourcehub.in/ref/u/${profile?.referralCode ?? 'INVITE'}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink);

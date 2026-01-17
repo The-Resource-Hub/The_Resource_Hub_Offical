@@ -25,10 +25,10 @@ interface ActiveLink {
 
 // --- MOCK DATA ---
 const MOCK_ACTIVE_LINKS: ActiveLink[] = [
-  { id: 1, original: 'https://dribbble.com/shots/23941...', short: 'res.hub/x8k29', clicks: 1240, region: 'US, IN', status: 'Active', earnings: 12.40 },
-  { id: 2, original: 'https://youtube.com/watch?v=dQw...', short: 'res.hub/r1l02', clicks: 850, region: 'Global', status: 'Active', earnings: 8.50 },
-  { id: 3, original: 'https://github.com/facebook/rea...', short: 'res.hub/dev01', clicks: 420, region: 'UK, DE', status: 'Paused', earnings: 4.20 },
-  { id: 4, original: 'https://www.google.com/search?q=g...', short: 'res.hub/gogl1', clicks: 1500, region: 'US', status: 'Active', earnings: 15.00 },
+  { id: 1, original: 'https://dribbble.com/shots/23941...', short: 'theresourcehub.in/x8k29', clicks: 1240, region: 'US, IN', status: 'Active', earnings: 12.40 },
+  { id: 2, original: 'https://youtube.com/watch?v=dQw...', short: 'theresourcehub.in/r1l02', clicks: 850, region: 'Global', status: 'Active', earnings: 8.50 },
+  { id: 3, original: 'https://github.com/facebook/rea...', short: 'theresourcehub.in/dev01', clicks: 420, region: 'UK, DE', status: 'Paused', earnings: 4.20 },
+  { id: 4, original: 'https://www.google.com/search?q=g...', short: 'theresourcehub.in/gogl1', clicks: 1500, region: 'US', status: 'Active', earnings: 15.00 },
 ];
 
 interface ShortlinkPageProps {
