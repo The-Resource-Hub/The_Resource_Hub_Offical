@@ -60,7 +60,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
       case 'payment': return <PaymentView />;
       case 'inventory': return <PaymentView />; // Note: existing logic seems to map inventory to PaymentView or similar in snippet, but I'll focus on support
       case 'offers': return <OffersView />;
-      case 'support': return <SupportView onMenuClick={() => {}} hideNavbar={true} />;
+      case 'support': return <SupportView onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'logs': return <LogsView />;
       case 'settings': return <SettingsView />;
       case 'shree-prime': return <ShreeGenPrime onClose={() => setActiveView('dashboard')} />;
@@ -80,33 +80,35 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 md:px-10 shrink-0 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
-          <div className="flex items-center gap-6">
-            {isMobile && (
-              <button onClick={() => setIsSidebarOpen(true)} className="p-2.5 rounded-xl bg-white/5 text-white/60">
-                <MenuIcon size={20} />
-              </button>
-            )}
-            <motion.h2 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-sm font-black uppercase tracking-[0.4em]"
-            >
-              <span className="text-red-600">ADMIN</span>
-              <span className="text-white">ISTRATION</span>
-            </motion.h2>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex flex-col items-end">
-              <span className="text-xs font-bold text-white">Preet Bopche</span>
-              <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Master Admin</span>
+        {activeView !== 'support' && (
+          <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 md:px-10 shrink-0 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
+            <div className="flex items-center gap-6">
+              {isMobile && (
+                <button onClick={() => setIsSidebarOpen(true)} className="p-2.5 rounded-xl bg-white/5 text-white/60">
+                  <MenuIcon size={20} />
+                </button>
+              )}
+              <motion.h2 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm font-black uppercase tracking-[0.4em]"
+              >
+                <span className="text-red-600">ADMIN</span>
+                <span className="text-white">ISTRATION</span>
+              </motion.h2>
             </div>
-            <img src="https://picsum.photos/seed/admin/100/100" className="w-10 h-10 rounded-xl border border-white/10" alt="Admin" />
-          </div>
-        </header>
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-[#020202]">
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex flex-col items-end">
+                <span className="text-xs font-bold text-white">Preet Bopche</span>
+                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Master Admin</span>
+              </div>
+              <img src="https://picsum.photos/seed/admin/100/100" className="w-10 h-10 rounded-xl border border-white/10" alt="Admin" />
+            </div>
+          </header>
+        )}
+
+        <main className={`flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-[#020202] ${activeView === 'support' ? '!p-0' : ''}`}>
           <Suspense fallback={
             <div className="flex items-center justify-center h-full">
               <Loader2 className="animate-spin text-cyan-500" size={32} />
