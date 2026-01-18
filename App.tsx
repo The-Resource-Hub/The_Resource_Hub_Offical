@@ -22,20 +22,31 @@ const GamingPage = lazy(() => import('./features/gaming/GamingPage.tsx'));
 const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
 const ShreeGenApiGuidePage = lazy(() => import('./features/api/ShreeGenApiGuidePage.tsx'));
 const SupportPage = lazy(() => import('./features/support/SupportPage.tsx'));
+const AuthPage = lazy(() => import('./features/auth/AuthPage.tsx'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
+  const [userAuth, setUserAuth] = useState(false);
   const [balance, setBalance] = useState(0);
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('admin_session_token');
-    if (token === 'active_session') {
+    (window as any).dispatchView = (view: string) => setCurrentView(view);
+    const adminToken = sessionStorage.getItem('admin_session_token');
+    if (adminToken === 'active_session') {
       setIsAdminAuth(true);
     }
+    const userToken = localStorage.getItem('user_session');
+    if (userToken) setUserAuth(true);
+  }, []);
+
+  const handleUserAuthSuccess = useCallback(() => {
+    localStorage.setItem('user_session', 'active');
+    setUserAuth(true);
+    setCurrentView('home');
   }, []);
 
   const handleAdminLogin = useCallback(() => {
@@ -81,6 +92,8 @@ const App: React.FC = () => {
         return <GamingPage balance={balance} onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onWalletClick={() => setCurrentView('wallet')} />;
       case 'support':
         return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
+      case 'auth':
+        return <AuthPage onBack={() => setCurrentView('home')} onSuccess={handleUserAuthSuccess} />;
       case 'shree-gen-api':
         return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onGuideClick={() => setCurrentView('shree-gen-api-guide')} />;
       case 'shree-gen-api-guide':
@@ -92,7 +105,7 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'shree-gen-api-guide', 'support'].includes(currentView);
+  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'shree-gen-api-guide', 'support', 'auth'].includes(currentView);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020202]">
