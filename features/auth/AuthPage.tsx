@@ -1,7 +1,7 @@
 
-import React, { useEffect, useRef, memo, useState, useCallback, Suspense } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Chrome, Github, ShieldCheck, Sparkles, Eye, EyeOff, Globe } from 'lucide-react';
+import React, { useEffect, useRef, memo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, User, ArrowRight, Chrome, Github, ShieldCheck, Globe, Eye, EyeOff } from 'lucide-react';
 
 const GalaxyBackground: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,11 +17,11 @@ const GalaxyBackground: React.FC = memo(() => {
     let w = canvas.width = window.innerWidth;
     let h = canvas.height = window.innerHeight;
     const isMobile = w < 768;
-    const count = isMobile ? 800 : 2500;
-    const particles: any[] = [];
+    const count = isMobile ? 600 : 2000;
+    const particles: Particle[] = [];
 
     class Particle {
-      x: number; y: number; z: number; px: number; py: number; color: string;
+      x: number = 0; y: number = 0; z: number = 0; px: number = 0; py: number = 0; color: string = '';
       constructor() {
         this.reset();
       }
@@ -31,14 +31,14 @@ const GalaxyBackground: React.FC = memo(() => {
         this.z = Math.random() * 2000;
         this.px = 0;
         this.py = 0;
-        this.color = `hsl(${Math.random() * 60 + 180}, 70%, 70%)`;
+        this.color = `hsl(\${Math.random() * 60 + 180}, 70%, 70%)`;
       }
       update() {
-        const speed = isWarp ? 40 : 2;
+        const speed = isWarp ? 50 : 2;
         this.z -= speed;
         if (this.z < 1) this.reset();
       }
-      draw() {
+      draw(ctx: CanvasRenderingContext2D) {
         const scale = 500 / this.z;
         const x2d = this.x * scale + w / 2 + (mouse.x * 0.05);
         const y2d = this.y * scale + h / 2 + (mouse.y * 0.05);
@@ -63,7 +63,7 @@ const GalaxyBackground: React.FC = memo(() => {
       ctx.fillRect(0, 0, w, h);
       particles.forEach(p => {
         p.update();
-        p.draw();
+        p.draw(ctx);
       });
       requestAnimationFrame(animate);
     };
@@ -79,7 +79,7 @@ const GalaxyBackground: React.FC = memo(() => {
 
     const handleDeviceMotion = (e: DeviceOrientationEvent) => {
         if (e.beta && e.gamma) {
-            setMouse({ x: e.gamma * 10, y: e.beta * 10 });
+            setMouse({ x: e.gamma * 15, y: (e.beta - 45) * 15 });
         }
     };
 
@@ -87,7 +87,6 @@ const GalaxyBackground: React.FC = memo(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('deviceorientation', handleDeviceMotion);
     
-    // Listen for warp event
     const handleWarp = (e: any) => setIsWarp(e.detail);
     window.addEventListener('galaxy-warp', handleWarp);
 
@@ -99,7 +98,7 @@ const GalaxyBackground: React.FC = memo(() => {
       window.removeEventListener('deviceorientation', handleDeviceMotion);
       window.removeEventListener('galaxy-warp', handleWarp);
     };
-  }, []);
+  }, [mouse, isWarp]);
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none -z-10 bg-black" />;
 });
@@ -138,31 +137,27 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
         initial={{ opacity: 0, y: 30, scale: 0.9 }}
         animate={{ 
             opacity: 1, 
-            y: keyboardActive ? -100 : 0, 
-            scale: keyboardActive ? 0.9 : 1 
+            y: keyboardActive ? -120 : 0, 
+            scale: keyboardActive ? 0.85 : 1 
         }}
-        transition={{ type: 'spring', damping: 20 }}
+        transition={{ type: 'spring', damping: 25 }}
         className="w-full max-w-[450px] relative z-10"
       >
-        {/* Living Galaxy Form Container */}
-        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-10 shadow-[0_0_100px_rgba(6,182,212,0.1)] relative overflow-hidden group">
-          
-          {/* Internal Glow */}
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[3.5rem] p-10 shadow-[0_0_150px_rgba(6,182,212,0.15)] relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 pointer-events-none" />
           
           <div className="text-center mb-10">
             <motion.div 
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 1 }}
-              className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.4)] cursor-pointer"
+              whileHover={{ rotate: 180, scale: 1.1 }}
+              className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-[2.2rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(6,182,212,0.5)] cursor-pointer"
             >
-              <Globe size={40} className="text-white animate-pulse" />
+              <Globe size={40} className="text-white" />
             </motion.div>
             <h2 className="text-4xl font-black tracking-tighter uppercase mb-2 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-              {mode === 'login' ? 'GALAXY LOGIN' : 'JOIN THE HUB'}
+              {mode === 'login' ? 'GALAXY LOGIN' : 'CORE ACCESS'}
             </h2>
             <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em]">
-              Accessing Neural Cluster 01
+              NEURAL STREAM v2.0
             </p>
           </div>
 
@@ -170,9 +165,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
             <AnimatePresence mode="wait">
               {mode === 'signup' && (
                 <motion.div 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
                   className="space-y-2"
                 >
                   <div className="relative">
@@ -182,7 +177,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                       required
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
-                      placeholder="GALAXY ARCHITECT"
+                      placeholder="ARCHITECT NAME"
                       className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                     />
                   </div>
@@ -198,7 +193,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   required
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
-                  placeholder="IDENTITY@GALAXY.HUB"
+                  placeholder="GALAXY IDENTITY"
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                 />
               </div>
@@ -230,27 +225,27 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               disabled={loading}
               onMouseEnter={() => setWarp(true)}
               onMouseLeave={() => setWarp(false)}
-              className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 relative group overflow-hidden"
+              className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 relative group overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)]"
             >
-              <span className="relative z-10">{loading ? 'Warping...' : mode === 'login' ? 'Enter Galaxy' : 'Create Node'}</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10">{loading ? 'WARPING...' : mode === 'login' ? 'ENTER GALAXY' : 'INITIALIZE NODE'}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </button>
           </form>
 
           <div className="mt-10">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-[1px] flex-1 bg-white/10" />
-              <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">Neural Bridge</span>
+              <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">BRIDGE ACCESS</span>
               <div className="h-[1px] flex-1 bg-white/10" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-                <Chrome size={18} className="text-white/40" />
+              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3 active:scale-95 group/btn">
+                <Chrome size={18} className="text-white/40 group-hover/btn:text-white transition-colors" />
                 <span className="text-[10px] font-black uppercase">Google</span>
               </button>
-              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-                <Github size={18} className="text-white/40" />
+              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3 active:scale-95 group/btn">
+                <Github size={18} className="text-white/40 group-hover/btn:text-white transition-colors" />
                 <span className="text-[10px] font-black uppercase">GitHub</span>
               </button>
             </div>
@@ -261,18 +256,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
               className="text-[10px] font-black text-white/30 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em]"
             >
-              {mode === 'login' ? "Need New Node? Create Access" : "Have Identity? Re-Authorize"}
+              {mode === 'login' ? "NEW NODE? CREATE ACCESS" : "EXISTING NODE? AUTHORIZE"}
             </button>
           </div>
         </div>
 
-        {/* Return Button */}
         <motion.button 
           whileHover={{ x: -10 }}
           onClick={onBack}
           className="mt-12 mx-auto flex items-center gap-3 text-[10px] font-black text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
         >
-          <ArrowRight size={16} className="rotate-180" /> Return to Hub
+          <ArrowRight size={16} className="rotate-180" /> RETURN TO HUB
         </motion.button>
       </motion.div>
     </div>
