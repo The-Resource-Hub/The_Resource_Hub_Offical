@@ -184,35 +184,38 @@ const CHATS: ChatItem[] = [
 
 interface SupportPageProps {
   onMenuClick: () => void;
+  hideNavbar?: boolean;
 }
 
-const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick }) => {
+const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = false }) => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
   const activeChat = CHATS.find(c => c.id === activeChatId);
 
   return (
-    <div className="flex flex-col h-screen bg-[#0a0a0a] text-white overflow-hidden">
+    <div className={`flex flex-col h-screen bg-[#0a0a0a] text-white overflow-hidden ${hideNavbar ? 'pt-0' : ''}`}>
       {/* Navbar */}
-      <div className="px-6 py-4 bg-[#0e0e0e] border-b border-white/5 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={onMenuClick}
-            className="p-2 -ml-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white"
-          >
-            <Menu size={20} />
-          </button>
-          <div className="p-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/20">
-            <LifeBuoy size={20} className="text-orange-400" />
+      {!hideNavbar && (
+        <div className="px-6 py-4 bg-[#0e0e0e] border-b border-white/5 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onMenuClick}
+              className="p-2 -ml-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="p-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/20">
+              <LifeBuoy size={20} className="text-orange-400" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black tracking-tighter uppercase">Support Center</h1>
+              <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Connect with us</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tighter uppercase">Support Center</h1>
-            <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Connect with us</p>
+          <div className="flex items-center gap-4">
           </div>
         </div>
-        <div className="flex items-center gap-4">
-        </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
