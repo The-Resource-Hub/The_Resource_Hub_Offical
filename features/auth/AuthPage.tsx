@@ -1,7 +1,8 @@
 
 import React, { useEffect, useRef, memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Chrome, Github, ShieldCheck, Globe, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Chrome, Github, Globe, Eye, EyeOff } from 'lucide-react';
+import { userService } from '../../services/userService';
 
 const GalaxyBackground: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,12 +34,12 @@ const GalaxyBackground: React.FC = memo(() => {
         this.py = 0;
         this.color = `hsl(\${Math.random() * 60 + 180}, 70%, 70%)`;
       }
-      update() {
+      update(isWarp: boolean) {
         const speed = isWarp ? 50 : 2;
         this.z -= speed;
         if (this.z < 1) this.reset();
       }
-      draw(ctx: CanvasRenderingContext2D) {
+      draw(ctx: CanvasRenderingContext2D, w: number, h: number, mouse: { x: number, y: number }) {
         const scale = 500 / this.z;
         const x2d = this.x * scale + w / 2 + (mouse.x * 0.05);
         const y2d = this.y * scale + h / 2 + (mouse.y * 0.05);
@@ -62,8 +63,8 @@ const GalaxyBackground: React.FC = memo(() => {
       ctx.fillStyle = 'rgba(2, 2, 2, 0.2)';
       ctx.fillRect(0, 0, w, h);
       particles.forEach(p => {
-        p.update();
-        p.draw(ctx);
+        p.update(isWarp);
+        p.draw(ctx, w, h, mouse);
       });
       requestAnimationFrame(animate);
     };
@@ -113,20 +114,32 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [keyboardActive, setKeyboardActive] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
 
   const setWarp = (active: boolean) => {
     window.dispatchEvent(new CustomEvent('galaxy-warp', { detail: active }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     setWarp(true);
-    setTimeout(() => {
-      setLoading(false);
-      setWarp(false);
+    
+    try {
+      if (mode === 'signup') {
+        await userService.register(formData.email, formData.password, formData.name);
+      } else {
+        await userService.login(formData.email, formData.password);
+      }
       onSuccess();
-    }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+      setWarp(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -161,6 +174,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
             </p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-bold text-center uppercase tracking-widest">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <AnimatePresence mode="wait">
               {mode === 'signup' && (
@@ -175,6 +194,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                     <input 
                       type="text" 
                       required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
                       placeholder="ARCHITECT NAME"
@@ -191,6 +212,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                 <input 
                   type="email" 
                   required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
                   placeholder="GALAXY IDENTITY"
@@ -205,6 +228,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                 <input 
                   type={showPassword ? 'text' : 'password'} 
                   required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
                   placeholder="NEURAL KEY"
@@ -227,33 +252,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               onMouseLeave={() => setWarp(false)}
               className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 relative group overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)]"
             >
-              <span className="relative z-10">{loading ? 'WARPING...' : mode === 'login' ? 'ENTER GALAXY' : 'INITIALIZE NODE'}</span>
+              <span className="relative z-10">{loading ? 'AUTHENTICATING...' : mode === 'login' ? 'ENTER GALAXY' : 'INITIALIZE NODE'}</span>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </button>
           </form>
 
-          <div className="mt-10">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-[1px] flex-1 bg-white/10" />
-              <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">BRIDGE ACCESS</span>
-              <div className="h-[1px] flex-1 bg-white/10" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3 active:scale-95 group/btn">
-                <Chrome size={18} className="text-white/40 group-hover/btn:text-white transition-colors" />
-                <span className="text-[10px] font-black uppercase">Google</span>
-              </button>
-              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3 active:scale-95 group/btn">
-                <Github size={18} className="text-white/40 group-hover/btn:text-white transition-colors" />
-                <span className="text-[10px] font-black uppercase">GitHub</span>
-              </button>
-            </div>
-          </div>
-
           <div className="mt-10 text-center">
             <button 
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+              onClick={() => {
+                setMode(mode === 'login' ? 'signup' : 'login');
+                setError('');
+              }}
               className="text-[10px] font-black text-white/30 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em]"
             >
               {mode === 'login' ? "NEW NODE? CREATE ACCESS" : "EXISTING NODE? AUTHORIZE"}

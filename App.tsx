@@ -22,20 +22,37 @@ const GamingPage = lazy(() => import('./features/gaming/GamingPage.tsx'));
 const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
 const ShreeGenApiGuidePage = lazy(() => import('./features/api/ShreeGenApiGuidePage.tsx'));
 const SupportPage = lazy(() => import('./features/support/SupportPage.tsx'));
+const AuthPage = lazy(() => import('./features/auth/AuthPage.tsx'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
+  const [userAuth, setUserAuth] = useState(false);
   const [balance, setBalance] = useState(0);
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('admin_session_token');
-    if (token === 'active_session') {
+    (window as any).dispatchView = (view: string) => setCurrentView(view);
+    
+    // Auto-check for session
+    const userSession = localStorage.getItem('user_session_token');
+    if (!userSession) {
+        setCurrentView('auth');
+    } else {
+        setUserAuth(true);
+    }
+
+    const adminToken = sessionStorage.getItem('admin_session_token');
+    if (adminToken === 'active_session') {
       setIsAdminAuth(true);
     }
+  }, [currentView]);
+
+  const handleUserAuthSuccess = useCallback(() => {
+    setUserAuth(true);
+    setCurrentView('home');
   }, []);
 
   const handleAdminLogin = useCallback(() => {

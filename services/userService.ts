@@ -10,6 +10,7 @@ import {
   orderBy,
   limit
 } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "./firebase";
 import { logger } from "./loggerService";
 
@@ -45,18 +46,53 @@ export interface UserProfile {
 }
 
 export const userService = {
-  // ... existing syncUser ...
-  async generateApiKey(uid: string, label: string) {
-    const userRef = doc(db, "users", uid);
-    const key = `sk_live_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
-    const newKey = { key, label, createdAt: new Date().toISOString() };
-    
-    const userDoc = await getDoc(userRef);
-    const apiKeys = (userDoc.data()?.apiKeys || []);
-    await updateDoc(userRef, { apiKeys: [...apiKeys, newKey] });
-    return key;
+  async register(email: string, pass: string, name: string) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      const user = userCredential.user;
+      
+      const newUser: UserProfile = {
+        uid: user.uid,
+        email: email,
+        displayName: name,
+        photoURL: null,
+        phoneNumber: null,
+        balance: 100,
+        role: 'user',
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        referralCode: user.uid.substring(0, 8).toUpperCase(),
+        referralStats: { totalEarnings: 0, networkSize: 0, xp: 0 },
+        stats: { gameWinnings: 0, shortLinks: 0, referrals: 0, expenses: 0 }
+      };
+      
+      await setDoc(doc(db, "users", user.uid), newUser);
+      localStorage.setItem('user_session_token', user.uid);
+      return newUser;
+    } catch (error: any) {
+      logger.log('error', `Registration failed: ${error.message}`, 'Auth');
+      throw error;
+    }
   },
-  async syncUser(user: any) {
+
+  async login(email: string, pass: string) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      const user = userCredential.user;
+      localStorage.setItem('user_session_token', user.uid);
+      await updateDoc(doc(db, "users", user.uid), { lastLogin: new Date().toISOString() });
+      return user;
+    } catch (error: any) {
+      logger.log('error', `Login failed: ${error.message}`, 'Auth');
+      throw error;
+    }
+  },
+
+  async logout() {
+    await auth.signOut();
+    localStorage.removeItem('user_session_token');
+  },
     if (!user) return null;
     const userRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userRef);
