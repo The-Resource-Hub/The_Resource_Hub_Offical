@@ -14,6 +14,7 @@ const PaymentView = lazy(() => import('./components/PaymentView.tsx').then(m => 
 const InventoryView = lazy(() => import('./components/InventoryView.tsx').then(m => ({ default: m.InventoryView })));
 const OffersView = lazy(() => import('./components/OffersView.tsx').then(m => ({ default: m.OffersView })));
 const LogsView = lazy(() => import('./components/LogsView.tsx').then(m => ({ default: m.LogsView })));
+const SupportView = lazy(() => import('../support/SupportPage.tsx'));
 const SettingsView = lazy(() => import('./components/SettingsView.tsx').then(m => ({ default: m.SettingsView })));
 const ShreeGenPrime = lazy(() => import('./components/ShreeGenPrime.tsx').then(m => ({ default: m.ShreeGenPrime })));
 
@@ -59,6 +60,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
       case 'payment': return <PaymentView />;
       case 'inventory': return <InventoryView />;
       case 'offers': return <OffersView />;
+      case 'support': return <SupportView onMenuClick={() => {}} />;
       case 'logs': return <LogsView />;
       case 'settings': return <SettingsView />;
       case 'shree-prime': return <ShreeGenPrime onClose={() => setActiveView('dashboard')} />;

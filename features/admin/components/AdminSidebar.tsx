@@ -9,6 +9,7 @@ const SIDEBAR_ITEMS = [
     { id: 'orders', label: 'Order Management', icon: AdminIcons.Orders },
     { id: 'payment', label: 'Payment Mgmt', icon: AdminIcons.Payment },
     { id: 'inventory', label: 'Inventory', icon: AdminIcons.Inventory },
+    { id: 'support', label: 'Support', icon: AdminIcons.Support },
     { id: 'offers', label: 'Offers', icon: AdminIcons.Offers },
     { id: 'logs', label: 'Logs', icon: AdminIcons.Logs },
     { id: 'settings', label: 'Setting', icon: AdminIcons.Settings }

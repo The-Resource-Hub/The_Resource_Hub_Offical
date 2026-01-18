@@ -15,8 +15,7 @@ import {
   Crown,
   Link as LinkIcon,
   Sparkles,
-  Cpu,
-  User
+  Cpu 
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -27,7 +26,6 @@ interface SidebarProps {
 
 const MENU_ITEMS = [
   { id: 'home', label: 'Home', icon: Home, color: 'from-blue-500 to-cyan-400' },
-  { id: 'profile', label: 'My Profile', icon: User, color: 'from-cyan-400 to-blue-500' },
   { id: 'premium', label: 'Premium', icon: Crown, color: 'from-amber-400 to-yellow-600' }, 
   { id: 'orders', label: 'My Orders', icon: ShoppingBag, color: 'from-violet-500 to-purple-500' }, 
   { id: 'wallet', label: 'Wallet', icon: Wallet, color: 'from-emerald-400 to-green-600' },
