@@ -101,6 +101,8 @@ const App: React.FC = () => {
         return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'profile':
         return <UserProfilePage onBack={() => setCurrentView('home')} />;
+      case 'auth':
+        return <AuthPage onBack={() => setCurrentView('home')} onSuccess={handleUserAuthSuccess} />;
       case 'shree-gen-api':
         return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onGuideClick={() => setCurrentView('shree-gen-api-guide')} />;
       case 'shree-gen-api-guide':
@@ -112,7 +114,7 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'shree-gen-api-guide', 'support'].includes(currentView);
+  const isFullPage = ['admin-dashboard', 'shree-gen', 'premium', 'gaming', 'product-details', 'shree-gen-api', 'shree-gen-api-guide', 'support', 'auth', 'profile'].includes(currentView);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020202]">

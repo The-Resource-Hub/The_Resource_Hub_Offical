@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Menu, Bell, ShoppingCart, User, LayoutGrid } from 'lucide-react';
+import { Menu, Bell, ShoppingCart, User, LayoutGrid, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -25,6 +26,17 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
+        {!localStorage.getItem('user_session_token') && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => (window as any).dispatchView?.('auth')}
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white transition-all"
+          >
+            <Zap size={16} className="text-cyan-400" />
+            <span className="text-xs font-bold uppercase tracking-wider">Access Portal</span>
+          </motion.button>
+        )}
         <button className="p-2 hover:bg-white/10 rounded-full transition-colors text-white relative">
           <Bell size={24} />
           <span className="absolute top-2 right-2 w-2 h-2 bg-cyan-500 rounded-full border border-black animate-pulse"></span>
@@ -32,7 +44,10 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
         <button className="p-2 hover:bg-white/10 rounded-full transition-colors text-white">
           <ShoppingCart size={24} />
         </button>
-        <button className="p-2 hover:bg-white/10 rounded-full transition-colors text-white">
+        <button 
+          onClick={() => (window as any).dispatchView?.('profile')}
+          className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+        >
           <User size={24} />
         </button>
       </div>
