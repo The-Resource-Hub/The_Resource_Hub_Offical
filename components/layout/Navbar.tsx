@@ -3,7 +3,7 @@ import React from 'react';
 import { Menu, Bell, ShoppingCart, User, LayoutGrid, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-import hubLogo from '@assets/generated_images/sleek_futuristic_cybernetic_hub_logo.png';
+import hubLogo from '../../attached_assets/generated_images/sleek_futuristic_cybernetic_hub_logo.png';
 
 interface NavbarProps {
   onMenuClick: () => void;

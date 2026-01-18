@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Chrome, Github, Globe, Eye, EyeOff } from 'lucide-react';
 import { userService } from '../../services/userService';
 
-import hubLogo from '@assets/generated_images/sleek_futuristic_cybernetic_hub_logo.png';
+import hubLogo from '../../attached_assets/generated_images/sleek_futuristic_cybernetic_hub_logo.png';
 
 const GalaxyBackground: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
