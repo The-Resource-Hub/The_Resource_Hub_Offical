@@ -1,7 +1,108 @@
 
-import React, { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Github, Chrome, ShieldCheck, Sparkles, Eye, EyeOff } from 'lucide-react';
+import React, { useEffect, useRef, memo, useState, useCallback, Suspense } from 'react';
+import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
+import { Mail, Lock, User, ArrowRight, Chrome, Github, ShieldCheck, Sparkles, Eye, EyeOff, Globe } from 'lucide-react';
+
+const GalaxyBackground: React.FC = memo(() => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [isWarp, setIsWarp] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    const isMobile = w < 768;
+    const count = isMobile ? 800 : 2500;
+    const particles: any[] = [];
+
+    class Particle {
+      x: number; y: number; z: number; px: number; py: number; color: string;
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = (Math.random() - 0.5) * 2000;
+        this.y = (Math.random() - 0.5) * 2000;
+        this.z = Math.random() * 2000;
+        this.px = 0;
+        this.py = 0;
+        this.color = `hsl(${Math.random() * 60 + 180}, 70%, 70%)`;
+      }
+      update() {
+        const speed = isWarp ? 40 : 2;
+        this.z -= speed;
+        if (this.z < 1) this.reset();
+      }
+      draw() {
+        const scale = 500 / this.z;
+        const x2d = this.x * scale + w / 2 + (mouse.x * 0.05);
+        const y2d = this.y * scale + h / 2 + (mouse.y * 0.05);
+
+        if (this.px !== 0) {
+          ctx.strokeStyle = this.color;
+          ctx.lineWidth = scale * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(this.px, this.py);
+          ctx.lineTo(x2d, y2d);
+          ctx.stroke();
+        }
+        this.px = x2d;
+        this.py = y2d;
+      }
+    }
+
+    for (let i = 0; i < count; i++) particles.push(new Particle());
+
+    const animate = () => {
+      ctx.fillStyle = 'rgba(2, 2, 2, 0.2)';
+      ctx.fillRect(0, 0, w, h);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    };
+
+    const handleResize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMouse({ x: e.clientX - w/2, y: e.clientY - h/2 });
+    };
+
+    const handleDeviceMotion = (e: DeviceOrientationEvent) => {
+        if (e.beta && e.gamma) {
+            setMouse({ x: e.gamma * 10, y: e.beta * 10 });
+        }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('deviceorientation', handleDeviceMotion);
+    
+    // Listen for warp event
+    const handleWarp = (e: any) => setIsWarp(e.detail);
+    window.addEventListener('galaxy-warp', handleWarp);
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('deviceorientation', handleDeviceMotion);
+      window.removeEventListener('galaxy-warp', handleWarp);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none -z-10 bg-black" />;
+});
 
 interface AuthPageProps {
   onBack: () => void;
@@ -12,70 +113,77 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [keyboardActive, setKeyboardActive] = useState(false);
+
+  const setWarp = (active: boolean) => {
+    window.dispatchEvent(new CustomEvent('galaxy-warp', { detail: active }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulation
+    setWarp(true);
     setTimeout(() => {
       setLoading(false);
+      setWarp(false);
       onSuccess();
-    }, 1500);
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen bg-[#020202] text-white flex items-center justify-center p-6 relative overflow-hidden font-sans">
-      
-      {/* 3D Ambient Background */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-500/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 blur-[120px] rounded-full" />
-      </div>
+    <div className="min-h-screen text-white flex items-center justify-center p-6 relative overflow-hidden font-sans">
+      <GalaxyBackground />
 
       <motion.div 
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        initial={{ opacity: 0, y: 30, scale: 0.9 }}
+        animate={{ 
+            opacity: 1, 
+            y: keyboardActive ? -100 : 0, 
+            scale: keyboardActive ? 0.9 : 1 
+        }}
+        transition={{ type: 'spring', damping: 20 }}
         className="w-full max-w-[450px] relative z-10"
       >
-        {/* Card with Glassmorphism & 3D Effect */}
-        <div className="bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+        {/* Living Galaxy Form Container */}
+        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-10 shadow-[0_0_100px_rgba(6,182,212,0.1)] relative overflow-hidden group">
           
-          {/* Top Decorative bar */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+          {/* Internal Glow */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
           
           <div className="text-center mb-10">
             <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-500/20 rotate-12 group-hover:rotate-0 transition-transform duration-500"
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 1 }}
+              className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.4)] cursor-pointer"
             >
-              <ShieldCheck size={32} className="text-white" />
+              <Globe size={40} className="text-white animate-pulse" />
             </motion.div>
-            <h2 className="text-3xl font-black tracking-tighter uppercase mb-2">
-              {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            <h2 className="text-4xl font-black tracking-tighter uppercase mb-2 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
+              {mode === 'login' ? 'GALAXY LOGIN' : 'JOIN THE HUB'}
             </h2>
-            <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
-              Secure Neural Access <span className="text-cyan-500">v2.0</span>
+            <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em]">
+              Accessing Neural Cluster 01
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <AnimatePresence mode="wait">
               {mode === 'signup' && (
                 <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
                   className="space-y-2"
                 >
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Full Name</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                     <input 
                       type="text" 
                       required
-                      placeholder="Neural Architect"
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-cyan-500 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/10"
+                      onFocus={() => setKeyboardActive(true)}
+                      onBlur={() => setKeyboardActive(false)}
+                      placeholder="GALAXY ARCHITECT"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                     />
                   </div>
                 </motion.div>
@@ -83,32 +191,34 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Email Identity</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                 <input 
                   type="email" 
                   required
-                  placeholder="core@nexus.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:border-cyan-500 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/10"
+                  onFocus={() => setKeyboardActive(true)}
+                  onBlur={() => setKeyboardActive(false)}
+                  placeholder="IDENTITY@GALAXY.HUB"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Neural Key</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                 <input 
                   type={showPassword ? 'text' : 'password'} 
                   required
-                  placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm focus:border-cyan-500 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/10"
+                  onFocus={() => setKeyboardActive(true)}
+                  onBlur={() => setKeyboardActive(false)}
+                  placeholder="NEURAL KEY"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-14 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                 />
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -118,57 +228,53 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-black font-black uppercase tracking-widest py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-cyan-500/10 mt-4 overflow-hidden relative group"
+              onMouseEnter={() => setWarp(true)}
+              onMouseLeave={() => setWarp(false)}
+              className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 relative group overflow-hidden"
             >
-              <span className="relative z-10">{loading ? 'Processing...' : mode === 'login' ? 'Authorize' : 'Initialize'}</span>
-              {!loading && <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10">{loading ? 'Warping...' : mode === 'login' ? 'Enter Galaxy' : 'Create Node'}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </form>
 
           <div className="mt-10">
-            <div className="relative flex items-center justify-center mb-8">
-              <div className="absolute w-full h-[1px] bg-white/5" />
-              <span className="relative px-4 bg-[#0a0a0a] text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">Neural Bridge</span>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-[1px] flex-1 bg-white/10" />
+              <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">Neural Bridge</span>
+              <div className="h-[1px] flex-1 bg-white/10" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-3 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-bold">
-                <Chrome size={16} /> Google
+              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+                <Chrome size={18} className="text-white/40" />
+                <span className="text-[10px] font-black uppercase">Google</span>
               </button>
-              <button className="flex items-center justify-center gap-3 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-bold">
-                <Github size={16} /> GitHub
+              <button className="py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+                <Github size={18} className="text-white/40" />
+                <span className="text-[10px] font-black uppercase">GitHub</span>
               </button>
             </div>
           </div>
 
-          <div className="mt-8 text-center">
+          <div className="mt-10 text-center">
             <button 
               onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-              className="text-xs font-bold text-white/40 hover:text-cyan-400 transition-colors uppercase tracking-widest"
+              className="text-[10px] font-black text-white/30 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em]"
             >
-              {mode === 'login' ? "New Architect? Create Access" : "Existing Node? Authorize"}
+              {mode === 'login' ? "Need New Node? Create Access" : "Have Identity? Re-Authorize"}
             </button>
           </div>
         </div>
 
-        {/* Back Button */}
+        {/* Return Button */}
         <motion.button 
-          whileHover={{ x: -5 }}
+          whileHover={{ x: -10 }}
           onClick={onBack}
-          className="mt-8 mx-auto flex items-center gap-2 text-[10px] font-black text-white/30 uppercase tracking-widest hover:text-white transition-colors"
+          className="mt-12 mx-auto flex items-center gap-3 text-[10px] font-black text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
         >
-          <ArrowRight size={14} className="rotate-180" /> Return to Terminal
+          <ArrowRight size={16} className="rotate-180" /> Return to Hub
         </motion.button>
       </motion.div>
-
-      {/* Floating Particles */}
-      <div className="absolute top-[20%] right-[10%] opacity-20 animate-bounce">
-        <Sparkles size={40} className="text-cyan-500" />
-      </div>
-      <div className="absolute bottom-[20%] left-[10%] opacity-20 animate-pulse delay-700">
-        <Sparkles size={30} className="text-purple-500" />
-      </div>
     </div>
   );
 };

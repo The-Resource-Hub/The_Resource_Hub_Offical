@@ -25,12 +25,6 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
-        <button 
-          onClick={() => (window as any).dispatchView?.('auth')}
-          className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 text-white"
-        >
-          Access Portal
-        </button>
         <button className="p-2 hover:bg-white/10 rounded-full transition-colors text-white relative">
           <Bell size={24} />
           <span className="absolute top-2 right-2 w-2 h-2 bg-cyan-500 rounded-full border border-black animate-pulse"></span>
