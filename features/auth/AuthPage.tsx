@@ -144,7 +144,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      let friendlyError = 'Access Denied: Please check your credentials';
+      
+      const errorCode = err.code || '';
+      if (errorCode.includes('user-not-found')) friendlyError = 'User Not Found: Create an account first';
+      if (errorCode.includes('wrong-password')) friendlyError = 'Incorrect Password: Please try again';
+      if (errorCode.includes('invalid-email')) friendlyError = 'Invalid Email: Enter a valid identity';
+      if (errorCode.includes('email-already-in-use')) friendlyError = 'Account Exists: Please login instead';
+      if (errorCode.includes('weak-password')) friendlyError = 'Security Alert: Password must be at least 6 characters';
+      if (errorCode.includes('configuration-not-found')) friendlyError = 'System Sync Error: Please contact support';
+      
+      setError(friendlyError);
       setWarp(false);
     } finally {
       setLoading(false);
@@ -163,9 +173,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
             scale: keyboardActive ? 0.85 : 1 
         }}
         transition={{ type: 'spring', damping: 25 }}
-        className="w-full max-w-[450px] relative z-10"
+        className="w-full max-w-[550px] relative z-10"
       >
-        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[3.5rem] p-10 shadow-[0_0_150px_rgba(6,182,212,0.15)] relative overflow-hidden group">
+        <div className="bg-black/20 backdrop-blur-3xl border border-white/10 rounded-[3.5rem] p-10 md:p-14 shadow-[0_0_150px_rgba(6,182,212,0.15)] relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 pointer-events-none" />
           
           <div className="text-center mb-10">
@@ -236,11 +246,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                     <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                     <input 
                       type="text" 
+                      required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
-                      placeholder="WHATSAPP NUMBER (OPTIONAL)"
+                      placeholder="ENTER NUMBER"
                       className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                     />
                   </div>
