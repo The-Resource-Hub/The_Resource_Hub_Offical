@@ -117,7 +117,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [keyboardActive, setKeyboardActive] = useState(false);
   const [formData, setFormData] = useState({ 
-    name: '', 
+    firstName: '', 
+    lastName: '',
     username: '', 
     email: '', 
     password: '',
@@ -138,7 +139,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
     
     try {
       if (mode === 'signup') {
-        await userService.register(formData.email, formData.password, formData.name);
+        const fullName = `\${formData.firstName} \${formData.lastName}`;
+        await userService.register(formData.email, formData.password, fullName);
       } else {
         await userService.login(formData.email, formData.password);
       }
@@ -219,27 +221,41 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                       <input 
                         type="text" 
                         required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         onFocus={() => setKeyboardActive(true)}
                         onBlur={() => setKeyboardActive(false)}
-                        placeholder="FULL NAME"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                        placeholder="FIRST NAME"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                       />
                     </div>
                     <div className="relative">
-                      <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                       <input 
                         type="text" 
                         required
-                        value={formData.username}
-                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         onFocus={() => setKeyboardActive(true)}
                         onBlur={() => setKeyboardActive(false)}
-                        placeholder="USERNAME"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                        placeholder="LAST NAME"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                       />
                     </div>
+                  </div>
+
+                  <div className="relative">
+                    <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                    <input 
+                      type="text" 
+                      required
+                      value={formData.username}
+                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                      onFocus={() => setKeyboardActive(true)}
+                      onBlur={() => setKeyboardActive(false)}
+                      placeholder="USERNAME"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
+                    />
                   </div>
 
                   <div className="relative">
@@ -252,7 +268,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
                       placeholder="ENTER NUMBER"
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                     />
                   </div>
 
@@ -265,7 +281,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
                       placeholder="REFERRAL CODE (IF ANY)"
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                     />
                   </div>
                 </motion.div>
@@ -283,7 +299,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
                   placeholder="EMAIL ADDRESS"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-4 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                 />
               </div>
             </div>
@@ -299,7 +315,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
                   placeholder="SECURE PASSWORD"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-12 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 font-bold"
                 />
                 <button 
                   type="button"
