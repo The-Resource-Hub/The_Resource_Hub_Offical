@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Menu as MenuIcon } from 'lucide-react';
 import { AdminIcons } from './assets/AdminIcons.tsx';
 import { AdminSidebar } from './components/AdminSidebar.tsx';
+import { dbService } from '../../services/dbService';
 
 // Lazy load views with mandatory extensions
 const DashboardView = lazy(() => import('./components/DashboardView.tsx').then(m => ({ default: m.DashboardView })));
