@@ -114,7 +114,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [keyboardActive, setKeyboardActive] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    username: '', 
+    email: '', 
+    password: '',
+    phone: '',
+    referralCode: ''
+  });
   const [error, setError] = useState('');
 
   const setWarp = (active: boolean) => {
@@ -167,10 +174,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               <Globe size={40} className="text-white" />
             </motion.div>
             <h2 className="text-4xl font-black tracking-tighter uppercase mb-2 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-              {mode === 'login' ? 'GALAXY LOGIN' : 'CORE ACCESS'}
+              {mode === 'login' ? 'HUB LOGIN' : 'CREATE IDENTITY'}
             </h2>
             <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.4em]">
-              NEURAL STREAM v2.0
+              THE RESOURCE HUB SECURE PORTAL
             </p>
           </div>
 
@@ -187,19 +194,60 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="space-y-2"
+                  className="space-y-4"
                 >
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="relative">
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                      <input 
+                        type="text" 
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onFocus={() => setKeyboardActive(true)}
+                        onBlur={() => setKeyboardActive(false)}
+                        placeholder="FULL NAME"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                      />
+                    </div>
+                    <div className="relative">
+                      <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                      <input 
+                        type="text" 
+                        required
+                        value={formData.username}
+                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                        onFocus={() => setKeyboardActive(true)}
+                        onBlur={() => setKeyboardActive(false)}
+                        placeholder="USERNAME"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                      />
+                    </div>
+                  </div>
+
                   <div className="relative">
-                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                    <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
                     <input 
                       type="text" 
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       onFocus={() => setKeyboardActive(true)}
                       onBlur={() => setKeyboardActive(false)}
-                      placeholder="ARCHITECT NAME"
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                      placeholder="WHATSAPP NUMBER (OPTIONAL)"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <ArrowRight className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                    <input 
+                      type="text" 
+                      value={formData.referralCode}
+                      onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
+                      onFocus={() => setKeyboardActive(true)}
+                      onBlur={() => setKeyboardActive(false)}
+                      placeholder="REFERRAL CODE (IF ANY)"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                     />
                   </div>
                 </motion.div>
@@ -216,8 +264,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
-                  placeholder="GALAXY IDENTITY"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-5 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                  placeholder="EMAIL ADDRESS"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                 />
               </div>
             </div>
@@ -232,8 +280,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   onFocus={() => setKeyboardActive(true)}
                   onBlur={() => setKeyboardActive(false)}
-                  placeholder="NEURAL KEY"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-14 text-sm focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
+                  placeholder="SECURE PASSWORD"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-xs focus:border-cyan-500/50 focus:bg-white/[0.08] outline-none transition-all placeholder:text-white/20 uppercase font-bold"
                 />
                 <button 
                   type="button"
@@ -252,7 +300,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               onMouseLeave={() => setWarp(false)}
               className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 relative group overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)]"
             >
-              <span className="relative z-10">{loading ? 'AUTHENTICATING...' : mode === 'login' ? 'ENTER GALAXY' : 'INITIALIZE NODE'}</span>
+              <span className="relative z-10">{loading ? 'VERIFYING...' : mode === 'login' ? 'ACCESS HUB' : 'JOIN THE HUB'}</span>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </button>
           </form>
@@ -265,18 +313,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
               }}
               className="text-[10px] font-black text-white/30 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em]"
             >
-              {mode === 'login' ? "NEW NODE? CREATE ACCESS" : "EXISTING NODE? AUTHORIZE"}
+              {mode === 'login' ? "NEW USER? CREATE ACCOUNT" : "ALREADY REGISTERED? LOGIN"}
             </button>
           </div>
         </div>
-
-        <motion.button 
-          whileHover={{ x: -10 }}
-          onClick={onBack}
-          className="mt-12 mx-auto flex items-center gap-3 text-[10px] font-black text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
-        >
-          <ArrowRight size={16} className="rotate-180" /> RETURN TO HUB
-        </motion.button>
       </motion.div>
     </div>
   );
