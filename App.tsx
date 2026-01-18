@@ -23,6 +23,7 @@ const ShreeGenApiPage = lazy(() => import('./features/api/ShreeGenAiPage.tsx'));
 const ShreeGenApiGuidePage = lazy(() => import('./features/api/ShreeGenApiGuidePage.tsx'));
 const SupportPage = lazy(() => import('./features/support/SupportPage.tsx'));
 const AuthPage = lazy(() => import('./features/auth/AuthPage.tsx'));
+const UserProfilePage = lazy(() => import('./features/profile/UserProfile.tsx'));
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home'); 
@@ -98,6 +99,8 @@ const App: React.FC = () => {
         return <GamingPage balance={balance} onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onWalletClick={() => setCurrentView('wallet')} />;
       case 'support':
         return <SupportPage onMenuClick={() => setIsSidebarOpen(true)} />;
+      case 'profile':
+        return <UserProfilePage onBack={() => setCurrentView('home')} />;
       case 'shree-gen-api':
         return <ShreeGenApiPage onBack={() => setCurrentView('home')} onMenuClick={() => setIsSidebarOpen(true)} onGuideClick={() => setCurrentView('shree-gen-api-guide')} />;
       case 'shree-gen-api-guide':
