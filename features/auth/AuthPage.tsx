@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Chrome, Github, Globe, Eye, EyeOff } from 'lucide-react';
 import { userService } from '../../services/userService';
 
+import hubLogo from '@assets/generated_images/sleek_futuristic_cybernetic_hub_logo.png';
+
 const GalaxyBackground: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -169,9 +171,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onBack, onSuccess }) => {
           <div className="text-center mb-10">
             <motion.div 
               whileHover={{ rotate: 180, scale: 1.1 }}
-              className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-[2.2rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(6,182,212,0.5)] cursor-pointer"
+              className="w-24 h-24 mx-auto mb-6 cursor-pointer relative group"
             >
-              <Globe size={40} className="text-white" />
+              <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full group-hover:bg-cyan-500/40 transition-all duration-500" />
+              <img 
+                src={hubLogo} 
+                alt="The Resource Hub" 
+                className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]" 
+              />
             </motion.div>
             <h2 className="text-4xl font-black tracking-tighter uppercase mb-2 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
               {mode === 'login' ? 'HUB LOGIN' : 'CREATE IDENTITY'}
