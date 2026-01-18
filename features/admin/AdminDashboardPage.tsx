@@ -55,7 +55,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
     switch (activeView) {
       case 'dashboard': return <DashboardView />;
       case 'users': return <UsersView users={users} onEdit={() => {}} onBan={() => {}} />;
-      case 'orders': return <OrdersView orders={orders} onHandover={() => {}} />;
+      case 'orders': return <OrdersView onHandover={() => {}} />;
       case 'payment': return <PaymentView />;
       case 'inventory': return <InventoryView />;
       case 'offers': return <OffersView />;
