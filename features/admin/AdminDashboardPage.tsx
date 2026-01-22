@@ -60,7 +60,6 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onLogout }) => 
       case 'payment': return <PaymentView />;
       case 'inventory': return <PaymentView />; // Note: existing logic seems to map inventory to PaymentView or similar in snippet, but I'll focus on support
       case 'offers': return <OffersView />;
-      case 'support': return <SupportView onMenuClick={() => setIsSidebarOpen(true)} />;
       case 'logs': return <LogsView />;
       case 'settings': return <SettingsView />;
       case 'shree-prime': return <ShreeGenPrime onClose={() => setActiveView('dashboard')} />;
