@@ -15,6 +15,7 @@ const ReferralPage = lazy(() => import('./features/refferal/ReferralPage.tsx'));
 const ShortlinkPage = lazy(() => import('./features/shortlink/ShortlinkPage.tsx'));
 const ShortlinkStorePage = lazy(() => import('./features/shortlink/ShortlinkStorePage.tsx'));
 const ShreeGenPage = lazy(() => import('./features/ai/ShreeGenPage.tsx'));
+const GlobalChat = lazy(() => import('./features/chat/GlobalChat.tsx'));
 const AdminLoginPage = lazy(() => import('./features/admin/AdminLoginPage.tsx'));
 const AdminDashboardPage = lazy(() => import('./features/admin/AdminDashboardPage.tsx'));
 const PremiumPage = lazy(() => import('./features/primium/PremiumPage.tsx'));
@@ -75,6 +76,8 @@ const App: React.FC = () => {
         return <ShortlinkStorePage balance={balance} updateBalance={setBalance} onBack={() => setCurrentView('shortlink')} onWalletClick={() => setCurrentView('wallet')} />;
       case 'shree-gen':
         return <ShreeGenPage onBack={() => setCurrentView('home')} />;
+      case 'global-chat':
+        return <GlobalChat onBack={() => setCurrentView('home')} />;
       case 'premium':
         return <PremiumPage onBack={() => setCurrentView('home')} />;
       case 'gaming':

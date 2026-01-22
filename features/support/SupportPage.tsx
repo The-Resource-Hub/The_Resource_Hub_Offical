@@ -170,15 +170,6 @@ const CHATS: ChatItem[] = [
     unreadCount: 1,
     type: 'support',
     status: 'online'
-  },
-  {
-    id: 'global',
-    name: 'Global Chat',
-    lastMessage: 'Welcome to the community hub!',
-    time: '2m ago',
-    unreadCount: 0,
-    type: 'global',
-    status: 'online'
   }
 ];
 

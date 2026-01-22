@@ -9,6 +9,7 @@ import {
   Headphones, 
   Code, 
   Info,
+  Globe,
   Zap,
   Wallet,
   ShoppingBag,
@@ -32,6 +33,7 @@ const MENU_ITEMS = [
   
   { id: 'gaming', label: 'Gaming Zone', icon: Gamepad2, color: 'from-purple-500 to-pink-500' },
   { id: 'shree-gen', label: 'Shree Gen AI', icon: Sparkles, color: 'from-pink-500 to-rose-500' },
+  { id: 'global-chat', label: 'Global Chat', icon: Globe, color: 'from-blue-400 to-indigo-500' },
   { id: 'shortlink', label: 'Shortlink', icon: LinkIcon, color: 'from-indigo-400 to-cyan-400' }, 
   
   { id: 'referral', label: 'Referral', icon: Users, color: 'from-teal-400 to-cyan-500' },
