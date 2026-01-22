@@ -176,12 +176,45 @@ const CHATS: ChatItem[] = [
 interface SupportPageProps {
   onMenuClick: () => void;
   hideNavbar?: boolean;
+  isAdminView?: boolean;
 }
 
-const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = false }) => {
+const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = false, isAdminView = false }) => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [userChats, setUserChats] = useState<ChatItem[]>([]);
 
-  const activeChat = CHATS.find(c => c.id === activeChatId);
+  useEffect(() => {
+    if (isAdminView) {
+      // In a real app, we'd fetch all unique user support threads from Firebase
+      // For now, let's mock the list of users who need support
+      setUserChats([
+        {
+          id: 'user_1',
+          name: 'Customer: John Doe',
+          lastMessage: 'I have an issue with my order',
+          time: '5m ago',
+          unreadCount: 2,
+          type: 'support',
+          status: 'online'
+        },
+        {
+          id: 'user_2',
+          name: 'Customer: Jane Smith',
+          lastMessage: 'How do I upgrade to premium?',
+          time: '1h ago',
+          unreadCount: 0,
+          type: 'support',
+          status: 'offline'
+        }
+      ]);
+    }
+  }, [isAdminView]);
+
+  const displayChats = isAdminView 
+    ? [{ id: 'global', name: 'Global Chat', lastMessage: 'Community Chat', time: 'Live', unreadCount: 0, type: 'global', status: 'online' }, ...userChats]
+    : CHATS;
+
+  const activeChat = displayChats.find(c => c.id === activeChatId);
 
   return (
     <div className={`flex flex-col h-screen bg-[#0a0a0a] text-white overflow-hidden ${hideNavbar ? 'pt-0' : ''}`}>
@@ -203,15 +236,13 @@ const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = fal
               <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Connect with us</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-          </div>
         </div>
       )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
         <div className="max-w-2xl mx-auto p-4 space-y-3">
-          {CHATS.map((chat) => (
+          {displayChats.map((chat) => (
             <motion.button
               key={chat.id}
               whileHover={{ scale: 1.01 }}
