@@ -194,8 +194,8 @@ const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = fal
           lastMessage: 'I have an issue with my order',
           time: '5m ago',
           unreadCount: 2,
-          type: 'support',
-          status: 'online'
+          type: 'support' as const,
+          status: 'online' as const
         },
         {
           id: 'user_2',
@@ -203,8 +203,8 @@ const SupportPage: React.FC<SupportPageProps> = ({ onMenuClick, hideNavbar = fal
           lastMessage: 'How do I upgrade to premium?',
           time: '1h ago',
           unreadCount: 0,
-          type: 'support',
-          status: 'offline'
+          type: 'support' as const,
+          status: 'offline' as const
         }
       ]);
     }
